@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <cstring>
+#include <ilcplex/ilocplex.h>
 
 #include "../include/FWChrono.h"
 #include "../include/mt19937ar.h"
@@ -32,6 +33,8 @@ T string_to(const string& s){
 	if (!(i >> x)) return 0;
 	return x;
 }
+
+ILOSTLBEGIN
 
 int main(int argc, char* args[]) {
 	FWChrono timer;

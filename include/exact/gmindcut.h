@@ -15,7 +15,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "typedef.hpp"
+#include "../typedef.hpp"
 
 using std::vector;
 using std::cout;

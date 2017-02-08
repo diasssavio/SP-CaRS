@@ -6,7 +6,7 @@
 // Description : Model class implementation
 //============================================================================
 
-#include "../include/model.h"
+#include "../../include/exact/model.h"
 
 model::model(IloEnv _env, instance& _cars) : IloModel(_env), cars(_cars) {
 	init();

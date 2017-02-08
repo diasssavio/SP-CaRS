@@ -12,8 +12,8 @@
 #include <sstream>
 #include <ilcplex/ilocplex.h>
 
-#include "instance.h"
-#include "typedef.hpp"
+#include "../instance.h"
+#include "../typedef.hpp"
 
 class model: public IloModel {
 private:

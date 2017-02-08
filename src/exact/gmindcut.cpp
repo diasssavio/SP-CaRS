@@ -6,7 +6,7 @@
 // Description : Gmindcut class implementation
 //============================================================================
 
-#include "../include/gmindcut.h"
+#include "../../include/exact/gmindcut.h"
 
 // double Gmindcut::tempo = 0;
 int Gmindcut::nx = 0;

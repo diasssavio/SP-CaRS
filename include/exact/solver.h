@@ -12,8 +12,8 @@
 #include <ilcplex/ilocplex.h>
 
 #include "model.h"
-#include "typedef.hpp"
-#include "instance.h"
+#include "../typedef.hpp"
+#include "../instance.h"
 
 class solver : public IloCplex {
 private:

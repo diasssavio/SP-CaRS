@@ -11,17 +11,18 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <vector>
 #include <set>
 #include <cmath>
 #include <ilcplex/ilocplex.h>
 
-#include "FWChrono.h"
-#include "instance.h"
-#include "mincut.h"
+#include "../FWChrono.h"
+#include "../instance.h"
+#include "../typedef.hpp"
+// #include "mincut.h"
 #include "gmindcut.h"
 #include "model.h"
-#include "typedef.hpp"
 #include "node_info.h"
 
 // **** DEPRECATED: Solve callback for gathering LR informations
@@ -115,107 +116,6 @@ public:
   subset_callback(IloEnv env, IloNumVarArray3& _x, instance& _cars, ofstream& file) : IloCplex::LazyConstraintCallbackI(env), x(_x), cars(_cars), _file(file) { }
 
   void main();
-
-};
-
-// **** UNFINISHED: Lazy callback for subcycle elimination per vehicle
-class subset_callback2 : public IloCplex::LazyConstraintCallbackI {
-private:
-  IloNumVarArray3& x;
-  IloNumVarArray3& y;
-  instance& cars;
-  ofstream& _file;
-
-public:
-  IloCplex::CallbackI* duplicateCallback() const {
-    return new (getEnv()) subset_callback2(*this);
-  }
-
-  subset_callback2(IloEnv env, IloNumVarArray3& _x, IloNumVarArray3& _y, instance& _cars, ofstream& file) : IloCplex::LazyConstraintCallbackI(env), x(_x), y(_y), cars(_cars), _file(file) { }
-
-  void main();
-
-};
-
-// Lazy callback for cut set constraints, i.e. applied in integer solutions
-class cutset_callback : public IloCplex::LazyConstraintCallbackI {
-private:
-  IloNumVarArray3& x;
-  instance& cars;
-  ofstream& _file;
-
-  unsigned n_cuts;
-  double sep_time;
-
-public:
-  IloCplex::CallbackI* duplicateCallback() const {
-    return new (getEnv()) cutset_callback(*this);
-  }
-
-  cutset_callback(IloEnv env, IloNumVarArray3& _x, instance& _cars, ofstream& file) : IloCplex::LazyConstraintCallbackI(env), x(_x), cars(_cars), _file(file) {
-    n_cuts = 0;
-    sep_time = 0.0;
-  }
-
-  void main();
-
-  inline unsigned get_n_cuts() { return n_cuts; }
-  inline double get_sep_time() { return sep_time; }
-
-};
-
-// Cut callback for cut set constraints, i.e. applied in relaxed solutions
-class cutset_callback2 : public IloCplex::UserCutCallbackI {
-private:
-  IloNumVarArray3& x;
-  instance& cars;
-  ofstream& _file;
-
-  unsigned n_cuts;
-  double sep_time;
-
-public:
-  IloCplex::CallbackI* duplicateCallback() const {
-    return new (getEnv()) cutset_callback2(*this);
-  }
-
-  cutset_callback2(IloEnv env, IloNumVarArray3& _x, instance& _cars, ofstream& file) : IloCplex::UserCutCallbackI(env), x(_x), cars(_cars), _file(file) {
-    n_cuts = 0;
-    sep_time = 0.0;
-  }
-
-  void main();
-
-  inline unsigned get_n_cuts() { return n_cuts; }
-  inline double get_sep_time() { return sep_time; }
-
-};
-
-// Callback for printing minimum set violation
-class cutset_callback3 : public IloCplex::UserCutCallbackI {
-private:
-  IloNumVarArray3& x;
-  IloNumVarArray3& y;
-  instance& cars;
-  ofstream& _file;
-
-  unsigned n_cuts;
-  double sep_time;
-
-public:
-  IloCplex::CallbackI* duplicateCallback() const {
-    return new (getEnv()) cutset_callback3(*this);
-  }
-
-  cutset_callback3(IloEnv env, IloNumVarArray3& _x, IloNumVarArray3& _y, instance& _cars, ofstream& file) : IloCplex::UserCutCallbackI(env), x(_x), y(_y), cars(_cars), _file(file) {
-    n_cuts = 0;
-    sep_time = 0.0;
-  }
-
-  void main();
-
-  inline unsigned get_n_cuts() { return n_cuts; }
-  inline double get_sep_time() { return sep_time; }
 
 };
 

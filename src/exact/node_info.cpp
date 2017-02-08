@@ -6,7 +6,7 @@
 // Description : Node Info class implementation
 //============================================================================
 
-#include "../include/node_info.h"
+#include "../../include/exact/node_info.h"
 
 node_info::node_info(unsigned _depth) : depth(_depth), obj_value(0.0) {}
 
