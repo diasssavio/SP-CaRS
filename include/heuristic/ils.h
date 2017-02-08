@@ -9,13 +9,13 @@
 #ifndef ILS_H_
 #define ILS_H_
 
-#include "instance.h"
-#include "solution.h"
+#include "../instance.h"
+#include "../solution.h"
+#include "../mt19937ar.h"
 #include "constructor.h"
 #include "neighborhoods.h"
 #include "perturbation.h"
 #include "logger.h"
-#include "mt19937ar.h"
 
 #include <utility>
 #include <algorithm>

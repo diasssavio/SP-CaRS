@@ -16,12 +16,12 @@
 #include <cstring>
 
 #include "../include/FWChrono.h"
-#include "../include/logger.h"
 #include "../include/mt19937ar.h"
 #include "../include/instance.h"
 #include "../include/solution.h"
-#include "../include/constructor.h"
-#include "../include/ils.h"
+#include "../include/heuristic/logger.h"
+#include "../include/heuristic/constructor.h"
+#include "../include/heuristic/ils.h"
 
 using namespace std;
 

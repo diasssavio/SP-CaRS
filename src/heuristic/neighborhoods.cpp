@@ -6,7 +6,7 @@
 // Description : Neighborhoods class implementation
 //============================================================================
 
-#include "../include/neighborhoods.h"
+#include "../../include/heuristic/neighborhoods.h"
 
 int myrandom( unsigned i ) { return genrand_int32() % i; }
 

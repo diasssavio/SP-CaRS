@@ -6,7 +6,7 @@
 // Description : Solution constructor class implementation
 //============================================================================
 
-#include "../include/constructor.h"
+#include "../../include/heuristic/constructor.h"
 
 constructor::constructor( instance& _cars, double _alpha ) : alpha(_alpha) {
 	cars = _cars;
@@ -158,7 +158,7 @@ solution constructor::generate_sol( vector< unsigned > allowed_cars ) {
 					trip.insert(trip.begin() + next_pos, next_point);
 					// cout << "Current Cost: " << cost << "\n";
 				}
-				CL.erase(CL.begin() + cl_pos);	
+				CL.erase(CL.begin() + cl_pos);
 			}
 
 			// for(unsigned k = 0; k < trip.size(); k++)

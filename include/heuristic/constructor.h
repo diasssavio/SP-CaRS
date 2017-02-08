@@ -9,9 +9,9 @@
 #ifndef CONSTRUCTOR_H_
 #define CONSTRUCTOR_H_
 
-#include "instance.h"
-#include "solution.h"
-#include "mt19937ar.h"
+#include "../instance.h"
+#include "../solution.h"
+#include "../mt19937ar.h"
 
 #include <algorithm>
 #include <limits>
@@ -32,7 +32,7 @@ public:
 	// TODO Adapt the constructor to get a solution based on the return_place
 	// 			using all available vehicles
 	solution generate_sol( vector < unsigned > );
-	
+
 };
 
 #endif /* CONSTRUCTOR_H_ */

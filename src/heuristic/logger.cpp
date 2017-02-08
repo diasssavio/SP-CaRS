@@ -6,7 +6,7 @@
 // Description : Logger class implementation
 //============================================================================
 
-#include "../include/logger.h"
+#include "../../include/heuristic/logger.h"
 
 logger::logger() { }
 

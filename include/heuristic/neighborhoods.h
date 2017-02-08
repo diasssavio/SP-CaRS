@@ -9,10 +9,10 @@
 #ifndef NEIGHBORHOODS_H_
 #define NEIGHBORHOODS_H_
 
-#include "instance.h"
-#include "solution.h"
+#include "../instance.h"
+#include "../solution.h"
+#include "../mt19937ar.h"
 #include "constructor.h"
-#include "mt19937ar.h"
 
 #include <utility>
 #include <algorithm>
@@ -24,7 +24,7 @@ using namespace std;
 int myrandom( unsigned );
 
 class neighborhoods {
-private:	
+private:
 	// Input instance
 	instance cars;
 
@@ -81,7 +81,7 @@ public:
 
 	solution inner_RVND( solution& );
 	solution outter_RVND( solution& );
-	
+
 };
 
 #endif /* NEIGHBORHOODS_H_ */

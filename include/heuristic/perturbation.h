@@ -9,9 +9,9 @@
 #ifndef PERTURBATION_H_
 #define PERTURBATION_H_
 
-#include "instance.h"
-#include "solution.h"
-#include "mt19937ar.h"
+#include "../instance.h"
+#include "../solution.h"
+#include "../mt19937ar.h"
 
 #include <utility>
 #include <algorithm>
