@@ -41,7 +41,7 @@ private:
 	solution best;
 
 	// Pool of solutions (for Column Generation)
-	vector< solution > pool;
+	vector< solution* > pool;
 
 	// Logs
 	logger* logs;
@@ -58,7 +58,7 @@ public:
 
 	solution& execute();
 
-	void add_to_pool(solution&);
+	void add_to_pool(solution*);
 
 };
 

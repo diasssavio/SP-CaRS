@@ -54,7 +54,7 @@ solution& ils::execute() {
 				best = sol;
 
 			// Trying to add solution to pool
-			add_to_pool(sol);
+			add_to_pool(&sol);
 
 			if((k + 1) < max_it)
 				sol = pert.execute(sol);
@@ -68,8 +68,8 @@ solution& ils::execute() {
 	return best;
 }
 
-void ils::add_to_pool(solution& _to_add) {
-	double current_cost = _to_add.get_cost();
+void ils::add_to_pool(solution* _to_add) {
+	double current_cost = _to_add->get_cost();
 	double best_cost = best.get_cost();
 	double acceptance_gap = 0.1;
 
