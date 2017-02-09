@@ -40,6 +40,9 @@ private:
 	// Result best solution
 	solution best;
 
+	// Pool of solutions (for Column Generation)
+	vector< solution > pool;
+
 	// Logs
 	logger* logs;
 
@@ -54,6 +57,8 @@ public:
 	virtual ~ils();
 
 	solution& execute();
+
+	void add_to_pool(solution&);
 
 };
 

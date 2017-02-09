@@ -52,9 +52,12 @@ solution& ils::execute() {
 			sol = neighbors.execute(sol);
 			if(sol.get_cost() < best.get_cost())
 				best = sol;
-			if((k + 1) < max_it) {
+
+			// Trying to add solution to pool
+			add_to_pool(sol);
+
+			if((k + 1) < max_it)
 				sol = pert.execute(sol);
-			}
 		}
 		// Adding the best solution for MS iterations
 		logs->make_log(best.get_cost());
@@ -62,44 +65,17 @@ solution& ils::execute() {
 
 	// logs.print_log();
 
-	/*subsets(1, cars.get_c());
-	for(unsigned i = 0; i < sets.size() - 1; i++) {
-		// printf("{");
-		for(unsigned j = 0; j < sets[i].size(); j++)
-			--sets[i][j];
-			// printf("%d ", --sets[i][j]);
-		// printf("\b}\n");
-		if(sets[i].size() >= cars.get_c()) {
-			for(unsigned l = 0; l < max_ms_it; l++) {
-				sol = cons.generate_sol(sets[i]);
-				if(first) {
-					best = sol;
-					first = false;
-				}
-				// sol.show_latex("BrasilRJ14e.coo", "cons.tex");
-				// printf("INITIAL SOLUTION:\n");
-				// sol.show_data();
-				for(unsigned k = 0; k < max_it; k++) {
-					// printf("RVND:\n");
-					sol = neighbors.execute(sol);
-					// sol = neighbors.full_extend_contract(sol);
-					// sol = neighbors.extend_contract(sol);
-					if(sol.get_cost() < best.get_cost())
-						best = sol;
-					// sol.show_data();
-					if((k + 1) < max_it) {
-						// printf("PERTURBATION:\n");
-						sol = pert.execute(sol);
-						// sol.show_data();
-					}
-					// vector< pair< unsigned, unsigned> > pos = sol.get_pos();
-          // vector< t_vec > veh = sol.get_vehicles();
-					// for(unsigned m = 0; m < pos.size(); m++)
-						// printf("%d: %d (%d) -> %d (%d)\n", veh[m].number, pos[m].first, veh[m].begin, pos[m].second, veh[m].end);
-				}
-			}
-		}
-	}*/
-
 	return best;
+}
+
+void ils::add_to_pool(solution& _to_add) {
+	double current_cost = _to_add.get_cost();
+	double best_cost = best.get_cost();
+	double acceptance_gap = 0.1;
+
+	if(acceptance_gap <= ((current_cost - best_cost) / best_cost)) {
+		// TODO Compare _to_add with the other solutions on pool
+
+		pool.push_back(_to_add);
+	}
 }
