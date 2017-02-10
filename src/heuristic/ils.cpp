@@ -74,7 +74,6 @@ void ils::add_to_pool(solution* _to_add) {
 	double acceptance_gap = 0.1;
 
 	if(acceptance_gap <= ((current_cost - best_cost) / best_cost)) {
-		// TODO Compare trips from _to_add with the other trips on pool
     vector< trip > trips = _to_add->get_trips();
     for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++) {
       bool has_identical = false;

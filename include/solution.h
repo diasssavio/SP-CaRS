@@ -20,6 +20,7 @@
 #include <cmath>
 #include <sstream>
 #include <fstream>
+#include <ilcplex/ilocplex.h>
 
 #include "instance.h"
 #include "bit_array.h"
@@ -60,6 +61,8 @@ public:
 
 	// Useful methods
 	void show_data();
+  IloNumArray vertices_coeff(IloEnv&);
+  IloNumArray trip_costs(IloEnv&, instance&);
 
 };
 

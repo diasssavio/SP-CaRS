@@ -8,7 +8,7 @@
 
 #include "../../include/exact/model.h"
 
-model::model(IloEnv _env, instance& _cars, IloNumArray2& _B, IloNumArray2& _f, graph& _g) : IloModel(_env), cars(_cars), B(_B), f(_f) {
+model::model(IloEnv& _env, instance& _cars, IloNumArray2& _B, IloNumArray2& _f, graph& _g) : IloModel(_env), cars(_cars), B(_B), f(_f) {
 	g = _g;
 	init();
 	add_obj();

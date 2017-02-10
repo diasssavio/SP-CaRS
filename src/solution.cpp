@@ -43,6 +43,31 @@ void trip::show_data() {
 	printf("-----------------------------------\n");
 }
 
+IloNumArray trip::vertices_coeff(IloEnv& env) {
+  IloNumArray to_return(env);
+  for(int i = 0; i < n; i++)
+    to_return.add(bit_vertices->is_in_array(i));
+
+  return to_return;
+}
+
+IloNumArray trip::trip_costs(IloEnv& env, instance& cars) {
+  int c = cars.get_c();
+  vector< matrix_2d > distances = cars.get_distances();
+  vector< matrix_2d > return_rates = cars.get_return_rates();
+
+  IloNumArray to_return(env);
+  for(int k = 0; k < c; k++) {
+    double cost = return_rates[k][renting][returning];
+    for(unsigned i = 0; i < vertices.size() - 1; i++)
+  		cost += distances[k][ vertices[i] ][ vertices[i + 1] ];
+  	cost += distances[k][ vertices[vertices.size() - 1] ][ returning ];
+    to_return.add(cost);
+  }
+
+  return to_return;
+}
+
 solution::solution() { }
 
 solution::solution( instance& _cars ) {

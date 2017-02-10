@@ -28,7 +28,7 @@ private:
 	graph g;
 
 public:
-	model(IloEnv, instance&, IloNumArray2&, IloNumArray2&, graph&);
+	model(IloEnv&, instance&, IloNumArray2&, IloNumArray2&, graph&);
 	virtual ~model();
 
 	// Instance

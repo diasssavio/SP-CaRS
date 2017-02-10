@@ -65,20 +65,37 @@ int main(int argc, char* args[]) {
     max_ms_it = string_to< unsigned >(args[5]);
   }
 
+  // Executing MILS
 	logger* logs = new logger(timer);
 	ils ILS(cars, max_ms_it, max_it, alpha, logs);
 	solution best = ILS.execute();
 	timer.stop();
   printf("BEST %.0lf TIME %.2lf\n", best.get_cost(), timer.getStopTime());
 
-	best.show_data();
-  // vector< trip > trips = best.get_trips();
-  vector< trip > trips = ILS.get_pool();
-	printf("TRIP DATA:\n");
-	for(int i = 0; i < trips.size(); i++)
-		trips[i].show_data();
+  best.show_data();
 
-  // cout << fixed << numeric_limits<unsigned long long>::max();
+  // Gathering trip data for Set Partition
+  IloEnv env;
+  vector< trip > aux = best.get_trips();
+  for(vector< trip >::iterator i = aux.begin(); i < aux.end(); i++) {
+    i->show_data();
+    IloNumArray aux2 = i->trip_costs(env, cars);
+    for(int j = 0; j < cars.get_c(); j++)
+      printf("%4.0lf", aux2[j]);
+    printf("\n");
+  }
+  // vector< trip > trips = ILS.get_pool();
+  // IloNumArray2 B(env);
+  // for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++)
+  //   B.add(i->vertices_coeff(env));
+  //
+  // try {
+  //   model mod(env, cars, B);
+  //   solver cplex(env, mod, timer);
+  //   cplex.run();
+  // } catch (IloException& e) {
+  //   cerr << "CONCERT EXCEPTION -- " << e << endl;
+  // }
 
 	return 0;
 }
