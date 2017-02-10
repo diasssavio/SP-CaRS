@@ -8,6 +8,33 @@
 
 #include "../include/solution.h"
 
+trip::trip() {
+	renting = returning = 0;
+	trip_number = 0.0;
+}
+
+trip::trip(vector< unsigned >& _vertices, unsigned _renting, unsigned _returning) : vertices(_vertices), renting(_renting), returning(_returning) {
+	trip_number = 0.0;
+	int k = 0;
+	for(int i = 1; k < vertices.size(); i *= 10)
+		trip_number += vertices[k++] * i;
+}
+
+trip::~trip() { vertices.clear(); }
+
+bool trip::operator==(const trip& _to_compare) {
+	return (_to_compare.get_trip_number() == this->trip_number) && (_to_compare.get_renting() == this->renting) && (_to_compare.get_returning() == this->returning);
+}
+
+void trip::show_data() {
+	printf("-----------------------------------\n");
+	printf("Renting/returning: %d/%d\nTrip: ", renting, returning);
+	for(int i = 0; i < vertices.size(); i++)
+		printf("%4d", vertices[i]);
+	printf("\nNumber representation: %.0lf\n", trip_number);
+	printf("-----------------------------------\n");
+}
+
 solution::solution() { }
 
 solution::solution( instance& _cars ) {
@@ -153,18 +180,21 @@ vector< unsigned > solution::not_used() {
   return not_used_veh;
 }
 
-trip::trip() {
-	renting = returning = 0;
-	trip_number = cost = 0.0;
-}
+vector< trip > solution::get_trips() {
+	vector< matrix_2d > distances = cars.get_distances();
+	vector< matrix_2d > return_rates = cars.get_return_rates();
 
-trip::trip(vector< unsigned >& _vertices, unsigned _renting, unsigned _returning, double _cost) : vertices(_vertices), renting(_renting), returning(_returning), cost(_cost) {
-	trip_number = 0.0;
-	int k = 0;
-	for(int i = vertices.size(); i > 0; i--)
-		trip_number += vertices[k++] * i;
-}
+	vector< trip > trips;
+	vector< unsigned > temp;
+	unsigned k = 0;
+	for(unsigned i = 0; i < cars.get_n(); i++) {
+		temp.push_back(route[i]);
+		if(vehicles[k].end == route[i + 1] || (vehicles[k].end == 0 && i == (cars.get_n() - 1)) ){
+			trips.push_back(trip(temp, vehicles[k].begin, vehicles[k].end));
+			k++;
+			temp.clear();
+		}
+	}
 
-bool trip::operator==(const trip& _to_compare) {
-	return (_to_compare.get_trip_number() == this->trip_number) && (_to_compare.get_renting() == this->renting) && (_to_compare.get_returning() == this->returning);
+	return trips;
 }

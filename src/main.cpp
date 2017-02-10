@@ -69,9 +69,13 @@ int main(int argc, char* args[]) {
 	ils ILS(cars, max_ms_it, max_it, alpha, logs);
 	solution best = ILS.execute();
 	timer.stop();
-  printf("BEST %.0lf TIME %.2lf", best.get_cost(), timer.getStopTime());
+  printf("BEST %.0lf TIME %.2lf\n", best.get_cost(), timer.getStopTime());
 
-  
+  vector< trip > trips = best.get_trips();
+	best.show_data();
+	printf("TRIP DATA:\n");
+	for(int i = 0; i < trips.size(); i++)
+		trips[i].show_data();
 
 	return 0;
 }
