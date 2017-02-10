@@ -74,4 +74,31 @@ public:
 
 };
 
+class trip {
+private:
+	vector< unsigned > vertices;
+	unsigned renting, returning;
+
+	double trip_number;
+
+	double cost;
+
+public:
+	// Constructors & destructor
+	trip();
+	trip(vector< unsigned >&, unsigned, unsigned, double);
+	virtual ~trip();
+
+	// Getters methods
+	const vector< unsigned >& get_vertices() const { return vertices; }
+	unsigned get_renting() const { return renting; }
+	unsigned get_returning() const { return returning; }
+	unsigned get_trip_number() const { return trip_number; }
+	double get_cost() const { return cost; }
+
+	// Operators overload
+	bool operator==(const trip&);
+
+};
+
 #endif /* SOLUTION_H_ */

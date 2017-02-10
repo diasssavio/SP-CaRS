@@ -152,3 +152,19 @@ vector< unsigned > solution::not_used() {
     if(!is_used(i)) not_used_veh.push_back(i);
   return not_used_veh;
 }
+
+trip::trip() {
+	renting = returning = 0;
+	trip_number = cost = 0.0;
+}
+
+trip::trip(vector< unsigned >& _vertices, unsigned _renting, unsigned _returning, double _cost) : vertices(_vertices), renting(_renting), returning(_returning), cost(_cost) {
+	trip_number = 0.0;
+	int k = 0;
+	for(int i = vertices.size(); i > 0; i--)
+		trip_number += vertices[k++] * i;
+}
+
+bool trip::operator==(const trip& _to_compare) {
+	return (_to_compare.get_trip_number() == this->trip_number) && (_to_compare.get_renting() == this->renting) && (_to_compare.get_returning() == this->returning);
+}
