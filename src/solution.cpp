@@ -27,7 +27,11 @@ trip::trip(vector< unsigned >& _vertices, unsigned _renting, unsigned _returning
 trip::~trip() { }
 
 bool trip::operator==(const trip& _to_compare) {
-	return (_to_compare.get_trip_number() == this->trip_number) && (_to_compare.get_renting() == this->renting) && (_to_compare.get_returning() == this->returning);
+  if((_to_compare.get_renting() == this->renting) && (_to_compare.get_returning() == this->returning)) {
+    double a = _to_compare.get_trip_number();
+    double b = this->trip_number;
+    return (a == b) || (abs(a-b) < abs(min(a,b)) * numeric_limits<double>::epsilon());
+  } else return false;
 }
 
 void trip::show_data() {

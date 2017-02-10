@@ -17,11 +17,13 @@
 #include <iostream>
 #include <cstring>
 #include <cstdio>
+#include <cmath>
 #include <sstream>
 #include <fstream>
 
 #include "instance.h"
 #include "bit_array.h"
+#include "typedef.hpp"
 
 using namespace std;
 
@@ -51,7 +53,7 @@ public:
 	unsigned get_renting() const { return renting; }
 	unsigned get_returning() const { return returning; }
   BitArray* get_bit_vertices() const { return bit_vertices; }
-	unsigned get_trip_number() const { return trip_number; }
+	double get_trip_number() const { return trip_number; }
 
 	// Operators overload
 	bool operator==(const trip&);

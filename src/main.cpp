@@ -78,5 +78,7 @@ int main(int argc, char* args[]) {
 	for(int i = 0; i < trips.size(); i++)
 		trips[i].show_data();
 
+  // cout << fixed << numeric_limits<unsigned long long>::max();
+
 	return 0;
 }
