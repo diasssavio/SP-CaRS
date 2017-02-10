@@ -23,6 +23,8 @@
 #include "../include/heuristic/logger.h"
 #include "../include/heuristic/constructor.h"
 #include "../include/heuristic/ils.h"
+#include "../include/exact/model.h"
+#include "../include/exact/solver.h"
 
 using namespace std;
 
@@ -33,6 +35,8 @@ T string_to(const string& s){
 	if (!(i >> x)) return 0;
 	return x;
 }
+
+vector< str_edge > build_graph(vector< trip >&);
 
 ILOSTLBEGIN
 
@@ -76,26 +80,27 @@ int main(int argc, char* args[]) {
 
   // Gathering trip data for Set Partition
   IloEnv env;
-  vector< trip > aux = best.get_trips();
-  for(vector< trip >::iterator i = aux.begin(); i < aux.end(); i++) {
-    i->show_data();
-    IloNumArray aux2 = i->trip_costs(env, cars);
-    for(int j = 0; j < cars.get_c(); j++)
-      printf("%4.0lf", aux2[j]);
-    printf("\n");
+  vector< trip > trips = ILS.get_pool();
+  IloNumArray2 B(env);
+  IloNumArray2 f(env);
+  for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++) {
+    B.add(i->vertices_coeff(env));
+    f.add(i->trip_costs(env, cars));
   }
-  // vector< trip > trips = ILS.get_pool();
-  // IloNumArray2 B(env);
-  // for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++)
-  //   B.add(i->vertices_coeff(env));
-  //
-  // try {
-  //   model mod(env, cars, B);
-  //   solver cplex(env, mod, timer);
-  //   cplex.run();
-  // } catch (IloException& e) {
-  //   cerr << "CONCERT EXCEPTION -- " << e << endl;
-  // }
+
+  vector< str_edge > ar = build_graph(trips);
+
+  try {
+    model mod(env, cars, B, f, g);
+    solver cplex(env, mod, timer);
+    cplex.run();
+  } catch (IloException& e) {
+    cerr << "CONCERT EXCEPTION -- " << e << endl;
+  }
 
 	return 0;
+}
+
+vector< str_edge > build_graph(vector< trip >& trips) {
+
 }

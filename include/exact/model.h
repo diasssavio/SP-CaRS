@@ -25,7 +25,7 @@ private:
 	// Set Partition coefficients
 	IloNumArray2 B; // Which vertices are in which trip
 	IloNumArray2 f; // Cost of each trip using a different vehicle
-	graph g;
+	graph& g;
 
 public:
 	model(IloEnv&, instance&, IloNumArray2&, IloNumArray2&, graph&);
