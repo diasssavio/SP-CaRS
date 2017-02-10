@@ -71,8 +71,9 @@ int main(int argc, char* args[]) {
 	timer.stop();
   printf("BEST %.0lf TIME %.2lf\n", best.get_cost(), timer.getStopTime());
 
-  vector< trip > trips = best.get_trips();
 	best.show_data();
+  // vector< trip > trips = best.get_trips();
+  vector< trip > trips = ILS.get_pool();
 	printf("TRIP DATA:\n");
 	for(int i = 0; i < trips.size(); i++)
 		trips[i].show_data();

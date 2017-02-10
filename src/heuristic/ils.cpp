@@ -53,7 +53,7 @@ solution& ils::execute() {
 			if(sol.get_cost() < best.get_cost())
 				best = sol;
 
-			// Trying to add solution to pool
+			// Trying to add solution trips to pool
 			add_to_pool(&sol);
 
 			if((k + 1) < max_it)
@@ -74,8 +74,18 @@ void ils::add_to_pool(solution* _to_add) {
 	double acceptance_gap = 0.1;
 
 	if(acceptance_gap <= ((current_cost - best_cost) / best_cost)) {
-		// TODO Compare _to_add with the other solutions on pool
+		// TODO Compare trips from _to_add with the other trips on pool
+    vector< trip > trips = _to_add->get_trips();
+    for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++) {
+      bool has_identical = false;
+      for(vector< trip >::iterator j = pool.begin(); j < pool.end(); j++)
+        if(*i == *j) { // If two trips have same renting/returning & same hash
+          has_identical = true;
+          break;
+        }
 
-		pool.push_back(_to_add);
+      if(!has_identical)
+  	    pool.push_back(*i);
+    }
 	}
 }

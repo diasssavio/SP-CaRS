@@ -41,7 +41,7 @@ private:
 	solution best;
 
 	// Pool of solutions (for Column Generation)
-	vector< solution* > pool;
+	vector< trip > pool;
 
 	// Logs
 	logger* logs;
@@ -59,6 +59,7 @@ public:
 	solution& execute();
 
 	void add_to_pool(solution*);
+  const vector< trip >& get_pool() const { return pool; }
 
 };
 
