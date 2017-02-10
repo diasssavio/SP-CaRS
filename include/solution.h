@@ -21,6 +21,7 @@
 #include <fstream>
 
 #include "instance.h"
+#include "bit_array.h"
 
 using namespace std;
 
@@ -34,18 +35,22 @@ private:
 	vector< unsigned > vertices;
 	unsigned renting, returning;
 
+  unsigned n;
+  BitArray* bit_vertices;
+
 	double trip_number;
 
 public:
 	// Constructors & destructor
 	trip();
-	trip(vector< unsigned >&, unsigned, unsigned);
+	trip(vector< unsigned >&, unsigned, unsigned, unsigned);
 	virtual ~trip();
 
 	// Getters methods
 	const vector< unsigned >& get_vertices() const { return vertices; }
 	unsigned get_renting() const { return renting; }
 	unsigned get_returning() const { return returning; }
+  BitArray* get_bit_vertices() const { return bit_vertices; }
 	unsigned get_trip_number() const { return trip_number; }
 
 	// Operators overload

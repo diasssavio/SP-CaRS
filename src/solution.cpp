@@ -11,16 +11,20 @@
 trip::trip() {
 	renting = returning = 0;
 	trip_number = 0.0;
+  bit_vertices = NULL;
 }
 
-trip::trip(vector< unsigned >& _vertices, unsigned _renting, unsigned _returning) : vertices(_vertices), renting(_renting), returning(_returning) {
+trip::trip(vector< unsigned >& _vertices, unsigned _renting, unsigned _returning, unsigned _n) : vertices(_vertices), renting(_renting), returning(_returning), n(_n) {
 	trip_number = 0.0;
 	int k = 0;
-	for(int i = 1; k < vertices.size(); i *= 10)
-		trip_number += vertices[k++] * i;
+  bit_vertices = new BitArray(n);
+	for(int i = 1; k < vertices.size(); i *= 10, k++) {
+    bit_vertices->add(vertices[k]);
+  	trip_number += vertices[k] * i;
+  }
 }
 
-trip::~trip() { vertices.clear(); }
+trip::~trip() { }
 
 bool trip::operator==(const trip& _to_compare) {
 	return (_to_compare.get_trip_number() == this->trip_number) && (_to_compare.get_renting() == this->renting) && (_to_compare.get_returning() == this->returning);
@@ -183,14 +187,15 @@ vector< unsigned > solution::not_used() {
 vector< trip > solution::get_trips() {
 	vector< matrix_2d > distances = cars.get_distances();
 	vector< matrix_2d > return_rates = cars.get_return_rates();
+  unsigned n = cars.get_n();
 
 	vector< trip > trips;
 	vector< unsigned > temp;
 	unsigned k = 0;
-	for(unsigned i = 0; i < cars.get_n(); i++) {
+	for(unsigned i = 0; i < n; i++) {
 		temp.push_back(route[i]);
-		if(vehicles[k].end == route[i + 1] || (vehicles[k].end == 0 && i == (cars.get_n() - 1)) ){
-			trips.push_back(trip(temp, vehicles[k].begin, vehicles[k].end));
+		if(vehicles[k].end == route[i + 1] || (vehicles[k].end == 0 && i == (n - 1)) ){
+			trips.push_back(trip(temp, vehicles[k].begin, vehicles[k].end, n));
 			k++;
 			temp.clear();
 		}
