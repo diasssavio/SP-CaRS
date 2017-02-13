@@ -88,7 +88,14 @@ int main(int argc, char* args[]) {
     f.add(i->trip_costs(env, cars));
   }
 
+  printf("TRIPS ADDED:\n");
+  for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++)
+    i->show_data();
+
   vector< str_edge > ar = build_graph(trips);
+  // printf("EDGES ASSIGNED:\n");
+  // for(vector< str_edge >::iterator it = ar.begin(); it < ar.end(); it++)
+  //   printf("%d->%d\n", it->v1, it->v2);
 
   try {
     model mod(env, cars, B, f, g);
@@ -102,5 +109,31 @@ int main(int argc, char* args[]) {
 }
 
 vector< str_edge > build_graph(vector< trip >& trips) {
+  vector< str_edge > edges;
+  for(unsigned i = 0; i < trips.size(); i++) {
+    // Adding edges starting from v0
+    if(trips[i].get_renting() == 0) {
+      str_edge aux = {0, i + 1};
+      edges.push_back(aux);
+    }
 
+    // Adding edges finishing in v0
+    if(trips[i].get_returning() == 0) {
+      str_edge aux = {i + 1, 0};
+      edges.push_back(aux);
+    }
+
+    // Adding edges between trips
+    BitArray* trip_vertices = trips[i].get_bit_vertices();
+    for(unsigned j = 0; j < trips.size(); j++) {
+      if(i == j) continue;
+      if(trips[i].get_returning() == trips[j].get_renting() && trips[i].get_returning() != 0)
+        if(!trip_vertices->has_commom_element(trips[j].get_bit_vertices())) {
+          str_edge aux = {i + 1, j + 1};
+          edges.push_back(aux);
+        }
+    }
+  }
+
+  return edges;
 }
