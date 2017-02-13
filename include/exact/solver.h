@@ -46,6 +46,7 @@ public:
   IloNumArray& get_mu() { return mu; }
 	double get_obj_value() const { return obj_value; }
   double get_linear_obj() const { return linear_obj; }
+  double get_linear_time() const { return linear_time; }
 };
 
 #endif /* SRC_SOLVER_H_ */

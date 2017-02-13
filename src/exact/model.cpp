@@ -21,27 +21,17 @@ void model::init(){
 	int c = cars.get_c();
 
 	lambda = IloNumVarArray2(getEnv(), g.n_nodes);
-	mu = IloNumVarArray(getEnv(), g.n_nodes);
 	for(int i = 0; i < g.n_nodes; i++) {
 		lambda[i] = IloNumVarArray(getEnv(), c);
 		for(int k = 0; k < c; k++) {
-        lambda[i][k] = IloNumVar(getEnv(), 0, 1, ILOINT);
-        // lambda[i][k] = IloNumVar(getEnv(), 0, 1, ILOFLOAT);
+      lambda[i][k] = IloNumVar(getEnv(), 0, 1, ILOINT);
+      // lambda[i][k] = IloNumVar(getEnv(), 0, 1, ILOFLOAT);
 
 			stringstream lambda_name;
 			lambda_name << "lambda(" << i << ")(" << k << ")";
 			lambda[i][k].setName(lambda_name.str().c_str());
 			add(lambda[i][k]);
 		}
-
-		if(i == 0)
-			mu[i] = IloNumVar(getEnv(), 1, 1, ILOINT);
-		else
-			mu[i] = IloNumVar(getEnv(), 0, 1, ILOINT);
-		stringstream mu_name;
-		mu_name << "mu(" << i << ")";
-		mu[i].setName(mu_name.str().c_str());
-		add(mu[i]);
 	}
 	chi = IloNumVarArray(getEnv(), g.n_arcs);
 	for(int i = 0; i < g.n_arcs; i++) {
@@ -62,8 +52,9 @@ void model::add_const(){
 
 	// Constraint (9.2): The number of trips cannot exceed the number of vehicles type
 	IloExpr expr(env);
-	for(int i = 0; i < n_a; i++)
-		expr += mu[i];
+  for(int i = 1; i < n_a; i++)
+    for(int k = 0; k < c; k++)
+  		expr += lambda[i][k];
 	IloConstraint c2 = (expr <= c);
 	stringstream c2_name;
 	c2_name << "Cons2";
@@ -71,12 +62,12 @@ void model::add_const(){
 	add(c2);
 
 	// Constraint (9.3):
-	for(int i = 0; i < n_a; i++) {
+	for(int i = 1; i < n_a; i++) {
 		IloExpr expr(env);
 		for(int k = 0; k < c; k++)
 			expr += lambda[i][k];
 
-		IloConstraint c3 = (expr == 1);
+		IloConstraint c3 = (expr <= 1);
 		stringstream c3_name;
 		c3_name << "Cons3(" << i << ")";
 		c3.setName(c3_name.str().c_str());
@@ -86,10 +77,10 @@ void model::add_const(){
 	// Constraint (9.4):
 	for(int k = 0; k < c; k++) {
 		IloExpr expr(env);
-		for(int i = 0; i < n_a; i++)
+		for(int i = 1; i < n_a; i++)
 			expr += lambda[i][k];
 
-		IloConstraint c4 = (expr == 1);
+		IloConstraint c4 = (expr <= 1);
 		stringstream c4_name;
 		c4_name << "Cons4(" << k << ")";
 		c4.setName(c4_name.str().c_str());
@@ -99,9 +90,9 @@ void model::add_const(){
 	// Constraint (9.5):
 	for(int j = 0; j < n; j++) {
 		IloExpr expr(env);
-		for(int i = 0; i < n_a; i++)
+		for(int i = 1; i < n_a; i++)
 			for(int k = 0; k < c; k++)
-				expr += B[i][j] * lambda[i][k];
+				expr += B[i-1][j] * lambda[i][k];
 
 		IloConstraint c5 = (expr == 1);
 		stringstream c5_name;
@@ -111,17 +102,27 @@ void model::add_const(){
 	}
 
 	// Constraint (9.6):
-	for(int i = 0; i < n_a; i++) {
-		IloExpr expr(env);
-		for(int k = 0; k < c; k++)
-			expr += lambda[i][k];
+	// for(int i = 1; i < n_a; i++) {
+	// 	IloExpr expr(env);
+	// 	for(int k = 0; k < c; k++)
+	// 		expr += lambda[i][k];
+  //
+	// 	IloConstraint c6 = (expr >= mu[i]);
+	// 	stringstream c6_name;
+	// 	c6_name << "Cons6(" << i << ")";
+	// 	c6.setName(c6_name.str().c_str());
+	// 	add(c6);
+	// }
 
-		IloConstraint c6 = (expr <= mu[i]);
-		stringstream c6_name;
-		c6_name << "Cons6(" << i << ")";
-		c6.setName(c6_name.str().c_str());
-		add(c6);
-	}
+  // Constraint (9.7):
+  // IloExpr expr2(env);
+  // for(int k = 0; k < c; k++)
+  //   expr2 += lambda[0][k];
+  IloConstraint c7 = (lambda[0][0] == 1);
+  stringstream c7_name;
+  c7_name << "Cons7";
+  c7.setName(c7_name.str().c_str());
+  add(c7);
 }
 
 void model::add_obj() {
@@ -130,9 +131,9 @@ void model::add_obj() {
 
 	// Creating OF expression
 	IloExpr expr(getEnv());
-	for(int i = 0; i < n_a; i++)
+	for(int i = 1; i < n_a; i++)
 		for(int k = 0; k < c; k++)
-			expr += f[i][k] * lambda[i][k];
+			expr += f[i-1][k] * lambda[i][k];
 
 	// Adding objective function
 	add(IloMinimize(getEnv(), expr));

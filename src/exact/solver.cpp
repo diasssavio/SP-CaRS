@@ -11,6 +11,8 @@
 solver::solver(IloEnv& _env, model& _mod, FWChrono& _timer) : env(_env), mod(_mod), IloCplex(_mod), timer(_timer) {
   linear_obj = 0.0;
   linear_time = 0.0;
+  lambda = IloNumArray2(env);
+  chi = IloNumArray(env);
 }
 
 solver::~solver() { }
@@ -32,7 +34,7 @@ void solver::run(double tl, double UB, bool first) {
   ofstream _file;
   _file.open("cutset.txt", ios::trunc);
 
-  // exportModel("test.lp");
+  exportModel("test.lp");
 
   // use(IloCplex::Callback(new (env) hao_cutsetcallback(env, mod.x, cars, _file)));
   // use(IloCplex::Callback(new (env) hao_cutsetcallback2(env, mod.x, cars, _file)));
@@ -44,4 +46,10 @@ void solver::run(double tl, double UB, bool first) {
   _file.close();
 
   obj_value = getObjValue();
+  for(unsigned i = 0; i < mod.g.n_nodes; i++) {
+    IloNumArray aux(env);
+    for(unsigned k = 0; k < mod.cars.get_c(); k++)
+      aux.add(getValue(mod.lambda[i][k]));
+    lambda.add(aux);
+  }
 }

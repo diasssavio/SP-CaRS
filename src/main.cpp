@@ -83,16 +83,21 @@ int main(int argc, char* args[]) {
   vector< trip > trips = ILS.get_pool();
   IloNumArray2 B(env);
   IloNumArray2 f(env);
+  // B.add(IloNumArray(env));
+  // f.add(IloNumArray(env));
   for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++) {
     B.add(i->vertices_coeff(env));
     f.add(i->trip_costs(env, cars));
   }
 
-  printf("TRIPS ADDED:\n");
-  for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++)
-    i->show_data();
+  // printf("TRIPS ADDED:\n");
+  // for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++)
+  //   i->show_data();
 
   vector< str_edge > ar = build_graph(trips);
+  graph g;
+  g.n_nodes = trips.size() + 1;
+  g.n_arcs = ar.size();
   // printf("EDGES ASSIGNED:\n");
   // for(vector< str_edge >::iterator it = ar.begin(); it < ar.end(); it++)
   //   printf("%d->%d\n", it->v1, it->v2);
@@ -101,6 +106,14 @@ int main(int argc, char* args[]) {
     model mod(env, cars, B, f, g);
     solver cplex(env, mod, timer);
     cplex.run();
+
+    printf("OBJ VALUE: %.2lf\n", cplex.get_obj_value());
+    IloNumArray2 lambda = cplex.get_lambda();
+    for(unsigned i = 0; i < g.n_nodes; i++) {
+      for(unsigned k = 0; k < cars.get_c(); k++)
+        printf("%4.0lf", lambda[i][k]);
+      printf("\n");
+    }
   } catch (IloException& e) {
     cerr << "CONCERT EXCEPTION -- " << e << endl;
   }

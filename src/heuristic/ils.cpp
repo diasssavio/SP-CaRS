@@ -73,7 +73,7 @@ void ils::add_to_pool(solution* _to_add) {
 	double best_cost = best.get_cost();
 	double acceptance_gap = 0.1;
 
-	if(acceptance_gap <= ((current_cost - best_cost) / best_cost)) {
+	if(((current_cost - best_cost) / best_cost) <= acceptance_gap) {
     vector< trip > trips = _to_add->get_trips();
     for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++) {
       bool has_identical = false;

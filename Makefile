@@ -82,7 +82,8 @@ clean:
 	/bin/rm -rf $(CPP_EX)
 	/bin/rm -rf ./tmp
 	/bin/rm -rf ./dat
-	/bin/rm -rf *.tex
+	/bin/rm -rf cutset.txt
+	/bin/rm -rf *.lp
 
 
 ########################## GENERATING OBJECT's ######################################################
