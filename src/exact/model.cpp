@@ -62,30 +62,30 @@ void model::add_const(){
 	add(c2);
 
 	// Constraint (9.3):
-	for(int i = 1; i < n_a; i++) {
-		IloExpr expr(env);
-		for(int k = 0; k < c; k++)
-			expr += lambda[i][k];
-
-		IloConstraint c3 = (expr <= 1);
-		stringstream c3_name;
-		c3_name << "Cons3(" << i << ")";
-		c3.setName(c3_name.str().c_str());
-		add(c3);
-	}
-
-	// Constraint (9.4):
-	for(int k = 0; k < c; k++) {
-		IloExpr expr(env);
-		for(int i = 1; i < n_a; i++)
-			expr += lambda[i][k];
-
-		IloConstraint c4 = (expr <= 1);
-		stringstream c4_name;
-		c4_name << "Cons4(" << k << ")";
-		c4.setName(c4_name.str().c_str());
-		add(c4);
-	}
+	// for(int i = 1; i < n_a; i++) {
+	// 	IloExpr expr(env);
+	// 	for(int k = 0; k < c; k++)
+	// 		expr += lambda[i][k];
+  //
+	// 	IloConstraint c3 = (expr <= 1);
+	// 	stringstream c3_name;
+	// 	c3_name << "Cons3(" << i << ")";
+	// 	c3.setName(c3_name.str().c_str());
+	// 	add(c3);
+	// }
+  //
+	// // Constraint (9.4):
+	// for(int k = 0; k < c; k++) {
+	// 	IloExpr expr(env);
+	// 	for(int i = 1; i < n_a; i++)
+	// 		expr += lambda[i][k];
+  //
+	// 	IloConstraint c4 = (expr <= 1);
+	// 	stringstream c4_name;
+	// 	c4_name << "Cons4(" << k << ")";
+	// 	c4.setName(c4_name.str().c_str());
+	// 	add(c4);
+	// }
 
 	// Constraint (9.5):
 	for(int j = 0; j < n; j++) {
