@@ -28,7 +28,7 @@ void solver::set_params(double tl) {
   setParam(IloCplex::Param::TimeLimit, tl);
 }
 
-void solver::run(double tl, double UB, bool first) {
+void solver::run(vector< trip >& trips, vector< str_edge >& ar, double tl, double UB, bool first) {
   set_params(tl);
 
   ofstream _file;
@@ -36,8 +36,8 @@ void solver::run(double tl, double UB, bool first) {
 
   exportModel("test.lp");
 
-  // use(IloCplex::Callback(new (env) hao_cutsetcallback(env, mod.x, cars, _file)));
-  // use(IloCplex::Callback(new (env) hao_cutsetcallback2(env, mod.x, cars, _file)));
+  use(IloCplex::Callback(new (env) hao_cutsetcallback(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
+  use(IloCplex::Callback(new (env) hao_cutsetcallback2(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
   // use(IloCplex::Callback(new (env) branch_callback(env, timer, cars, mod.x, mod.y, &linear_obj, &linear_time)));
   use(IloCplex::Callback(new (env) mipinfo_callback(env, timer, &linear_obj, &linear_time)));
 

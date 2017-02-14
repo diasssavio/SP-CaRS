@@ -24,14 +24,14 @@ Gmindcut::Gmindcut(ofstream& file) : _file(file) {
 Gmindcut::~Gmindcut() { }
 
 void Gmindcut::start(const int n_vert, const int n_arest, const vector<str_edge>& ar) {
-  int n = n_vert;
+  int n = n_vert + 1;
   int m = n_arest;
 
   alloc_graph(n, m);
   gr.n_nodes = n;
   gr.n_arcs = m;
-  gr.n_terminals = n_vert;
-  gr.raiz = 1;
+  gr.n_terminals = n_vert + 1;
+  gr.raiz = n;
   gr.sink = -1;
 
   number = vector<int>(n);
@@ -47,6 +47,7 @@ void Gmindcut::start(const int n_vert, const int n_arest, const vector<str_edge>
   arc* aptr1 = &(gr.arcs[0]);
   arc* aptr2 = &(gr.arcs[m]);
   for(i = 0; i < n_arest; i++, aptr1++, aptr2++) {
+  // for(i = 0; i < n_arest; i++, aptr1++) {
     int nod1 = ar[i].v1;
     int nod2 = ar[i].v2;
 
@@ -73,13 +74,17 @@ void Gmindcut::start(const int n_vert, const int n_arest, const vector<str_edge>
       nptr2->first_arc->next = aptr2;
     }
 
-    aptr1->index = 2 * i; // x_ij index
-    aptr2->index = 2 * i + 1; // x_ji index
+    aptr1->index = i; // x_ij index
+    aptr2->index = m + i; // x_ji index
+
+    // aptr1->index = 2 * i; // x_ij index
+    // aptr2->index = 2 * i + 1; // x_ji index
   }
 }
 
 void Gmindcut::alloc_graph(const int n, const int m) {
   gr.nodes = vector<node>(n);
+  // gr.arcs = vector<arc>(m);
   gr.arcs = vector<arc>(2 * m);
 }
 
@@ -672,8 +677,10 @@ int Gmindcut::generate_cuts(const vector<double>& x, vector<vector<int> >& sol, 
   vector<str_cut*> cuts(gr.n_terminals, NULL);
   ++nx;
   for(i = gr.n_arcs, j = 0; j < arc.size(); ++i, ++j) {
-    gr.arcs[i].rcap = x[gr.arcs[i].index] + EPSILON; // residual capacity
-    gr.arcs[i].cap = x[gr.arcs[i].index]; // capacity
+    // gr.arcs[i].rcap = x[gr.arcs[i].index] + EPSILON; // residual capacity
+    // gr.arcs[i].cap = x[gr.arcs[i].index]; // capacity
+    gr.arcs[i].rcap = EPSILON; // residual capacity
+    gr.arcs[i].cap = 0; // capacity
 
     gr.arcs[j].rcap = x[gr.arcs[j].index] + EPSILON;
     gr.arcs[j].cap = x[gr.arcs[j].index];
@@ -717,24 +724,24 @@ void Gmindcut::add_cut(int& ncuts, vector<str_cut*>& cuts, const int v, const do
     delete cuts[ncuts];
     cuts[ncuts] = NULL;
   } else {
-  for(i = 0, tam = 0, val = 0; i < n_vert; ++i)
-    if(gr.nodes[i].in_W == false) {
-      aptr1 = gr.nodes[i].first_arc;
-		  do {
-				if(aptr1->adjac->in_W == true) {
-          if(aptr1->cap > EPSILON)
-			      val += aptr1->cap;
-	    		cuts[ncuts]->corte[++tam] = aptr1->index;
-	  		}
-				aptr1 = aptr1->next;
-      } while(aptr1 != gr.nodes[i].first_arc);
-	  	} //  if( gr.nodes[i].in_W == true )
-      cuts[ncuts]->corte[0] = tam;
-      if(val > 1 - 2 * EPSILON) {
-			  _file <<"Gmindcut::add_cut_dist - corte nao violado "<<val<<" "<<viol<<std::endl;
-			  delete cuts[ncuts];
-      } else ncuts++;
-    }
+    for(i = 0, tam = 0, val = 0; i < n_vert; ++i)
+      if(gr.nodes[i].in_W == false) {
+        aptr1 = gr.nodes[i].first_arc;
+  		  do {
+  				if(aptr1->adjac->in_W == true) {
+            if(aptr1->cap > EPSILON)
+  			      val += aptr1->cap;
+  	    		cuts[ncuts]->corte[++tam] = aptr1->index;
+  	  		}
+  				aptr1 = aptr1->next;
+        } while(aptr1 != gr.nodes[i].first_arc);
+  	  	} //  if( gr.nodes[i].in_W == true )
+        cuts[ncuts]->corte[0] = tam;
+        if(val > 1 - 2 * EPSILON) {
+  			  _file <<"Gmindcut::add_cut_dist - corte nao violado "<<val<<" "<<viol<<std::endl;
+  			  delete cuts[ncuts];
+        } else ncuts++;
+      }
 }
 
 bool Gmindcut::verif_corte(const double minc, const int v, const bool avisar) const {

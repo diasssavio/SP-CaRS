@@ -39,7 +39,7 @@ public:
 
 	virtual ~solver();
 
-	void run(double = MAX_DOUBLE, double = MAX_DOUBLE, bool = false);
+	void run(vector< trip >&, vector< str_edge >&, double = MAX_DOUBLE, double = MAX_DOUBLE, bool = false);
 
 	IloNumArray2& get_lambda() { return lambda; }
 	IloNumArray& get_chi() { return chi; }

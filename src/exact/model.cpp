@@ -24,8 +24,9 @@ void model::init(){
 	for(int i = 0; i < g.n_nodes; i++) {
 		lambda[i] = IloNumVarArray(getEnv(), c);
 		for(int k = 0; k < c; k++) {
-      lambda[i][k] = IloNumVar(getEnv(), 0, 1, ILOINT);
-      // lambda[i][k] = IloNumVar(getEnv(), 0, 1, ILOFLOAT);
+      if(i == 0) lambda[i][k] = IloNumVar(getEnv(), 0, 0, ILOINT);
+      else lambda[i][k] = IloNumVar(getEnv(), 0, 1, ILOINT);
+          // lambda[i][k] = IloNumVar(getEnv(), 0, 1, ILOFLOAT);
 
 			stringstream lambda_name;
 			lambda_name << "lambda(" << i << ")(" << k << ")";
@@ -62,30 +63,30 @@ void model::add_const(){
 	add(c2);
 
 	// Constraint (9.3):
-	// for(int i = 1; i < n_a; i++) {
-	// 	IloExpr expr(env);
-	// 	for(int k = 0; k < c; k++)
-	// 		expr += lambda[i][k];
-  //
-	// 	IloConstraint c3 = (expr <= 1);
-	// 	stringstream c3_name;
-	// 	c3_name << "Cons3(" << i << ")";
-	// 	c3.setName(c3_name.str().c_str());
-	// 	add(c3);
-	// }
-  //
-	// // Constraint (9.4):
-	// for(int k = 0; k < c; k++) {
-	// 	IloExpr expr(env);
-	// 	for(int i = 1; i < n_a; i++)
-	// 		expr += lambda[i][k];
-  //
-	// 	IloConstraint c4 = (expr <= 1);
-	// 	stringstream c4_name;
-	// 	c4_name << "Cons4(" << k << ")";
-	// 	c4.setName(c4_name.str().c_str());
-	// 	add(c4);
-	// }
+	for(int i = 1; i < n_a; i++) {
+		IloExpr expr(env);
+		for(int k = 0; k < c; k++)
+			expr += lambda[i][k];
+
+		IloConstraint c3 = (expr <= 1);
+		stringstream c3_name;
+		c3_name << "Cons3(" << i << ")";
+		c3.setName(c3_name.str().c_str());
+		add(c3);
+	}
+
+	// Constraint (9.4):
+	for(int k = 0; k < c; k++) {
+		IloExpr expr(env);
+		for(int i = 1; i < n_a; i++)
+			expr += lambda[i][k];
+
+		IloConstraint c4 = (expr <= 1);
+		stringstream c4_name;
+		c4_name << "Cons4(" << k << ")";
+		c4.setName(c4_name.str().c_str());
+		add(c4);
+	}
 
 	// Constraint (9.5):
 	for(int j = 0; j < n; j++) {
@@ -118,11 +119,11 @@ void model::add_const(){
   // IloExpr expr2(env);
   // for(int k = 0; k < c; k++)
   //   expr2 += lambda[0][k];
-  IloConstraint c7 = (lambda[0][0] == 1);
-  stringstream c7_name;
-  c7_name << "Cons7";
-  c7.setName(c7_name.str().c_str());
-  add(c7);
+  // IloConstraint c7 = (lambda[0][0] == 1);
+  // stringstream c7_name;
+  // c7_name << "Cons7";
+  // c7.setName(c7_name.str().c_str());
+  // add(c7);
 }
 
 void model::add_obj() {

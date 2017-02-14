@@ -20,6 +20,7 @@
 #include "../FWChrono.h"
 #include "../instance.h"
 #include "../typedef.hpp"
+#include "../solution.h"
 // #include "mincut.h"
 #include "gmindcut.h"
 #include "model.h"
@@ -91,9 +92,13 @@ public:
 // Cut callback for cut set constraints, i.e. applied in relaxed solutions
 class hao_cutsetcallback : public IloCplex::UserCutCallbackI {
 private:
-  IloNumVarArray3& x;
-  instance& cars;
+  IloNumVarArray2& lambda;
+  IloNumVarArray& chi;
+  vector< trip >& trips;
   ofstream& _file;
+
+  vector< str_edge >& edges;
+  unsigned c;
 
   unsigned n_cuts;
   double sep_time;
@@ -103,7 +108,7 @@ public:
     return new (getEnv()) hao_cutsetcallback(*this);
   }
 
-  hao_cutsetcallback(IloEnv env, IloNumVarArray3& _x, instance& _cars, ofstream& file) : IloCplex::UserCutCallbackI(env), x(_x), cars(_cars), _file(file) {
+  hao_cutsetcallback(IloEnv env, IloNumVarArray2& _lambda, IloNumVarArray& _chi, vector< trip>& _trips, vector< str_edge >& _edges, ofstream& file, unsigned _c) : IloCplex::UserCutCallbackI(env), lambda(_lambda), chi(_chi), trips(_trips), edges(_edges), _file(file), c(_c) {
     n_cuts = 0;
     sep_time = 0.0;
   }
@@ -118,9 +123,13 @@ public:
 // Lazy callback for cut set constraints, i.e. applied in integer solutions
 class hao_cutsetcallback2 : public IloCplex::LazyConstraintCallbackI {
 private:
-  IloNumVarArray3& x;
-  instance& cars;
+  IloNumVarArray2& lambda;
+  IloNumVarArray& chi;
+  vector< trip >& trips;
   ofstream& _file;
+
+  vector< str_edge >& edges;
+  unsigned c;
 
   unsigned n_cuts;
   double sep_time;
@@ -130,7 +139,7 @@ public:
     return new (getEnv()) hao_cutsetcallback2(*this);
   }
 
-  hao_cutsetcallback2(IloEnv env, IloNumVarArray3& _x, instance& _cars, ofstream& file) : IloCplex::LazyConstraintCallbackI(env), x(_x), cars(_cars), _file(file) {
+  hao_cutsetcallback2(IloEnv env, IloNumVarArray2& _lambda, IloNumVarArray& _chi, vector< trip>& _trips, vector< str_edge >& _edges, ofstream& file, unsigned _c) : IloCplex::LazyConstraintCallbackI(env), lambda(_lambda), chi(_chi), trips(_trips), edges(_edges), _file(file), c(_c) {
     n_cuts = 0;
     sep_time = 0.0;
   }

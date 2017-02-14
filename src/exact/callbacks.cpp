@@ -28,41 +28,24 @@ void mipinfo_callback::main() {
 }
 
 void hao_cutsetcallback::main() {
-  unsigned c = cars.get_c();
-  unsigned n = cars.get_n();
-
   bool logs = true;
 	if(logs)
 		_file << "\nEntering hao_cutsetcallback. Solution value:" << getObjValue() << "\n";
 
-  // Building edges list and assigning variables LR values
-  vector<str_edge> edges;
-  vector<double> weights;
-  for(int i = 0; i < n; i++)
-    for(int j = i + 1; j < n; j++) {
-      str_edge edge;
-      edge.v1 = i;
-      edge.v2 = j;
-      edges.push_back(edge);
+  vector< double > weights;
+  for(unsigned it = 0; it < edges.size(); it++) {
+    unsigned i = edges[it].v1;
+    unsigned j = edges[it].v2;
+    weights.push_back(getValue(chi[it]));
+  }
 
-      // Getting edges weights ij and ji
-      double weight = 0.0;
-      for(int k = 0; k < c; k++)
-        weight += getValue(x[k][i][j]);
-      weights.push_back(weight);
-      weight = 0.0;
-      for(int k = 0; k < c; k++)
-        weight += getValue(x[k][j][i]);
-      weights.push_back(weight);
-    }
-
-  // if(logs)
-	// 	_file << "Neighborhood list built!...\n";
+  if(logs)
+		_file << "Neighborhood list built!...\n";
 
   // Applying minimum cut algorithm
-  vector<vector<int> > cuts;
+  vector< vector< int > > cuts;
   Gmindcut alg = Gmindcut(_file);
-  alg.start(n, edges.size(), edges);
+  alg.start(trips.size() + 1, edges.size(), edges);
   int ncuts = alg.generate_cuts(weights, cuts, edges, false);
   _file << "Number of cuts found: " << ncuts << endl;
 
@@ -74,24 +57,31 @@ void hao_cutsetcallback::main() {
   }
 
   // Evaluating whether there's constraint violation
+  vector< int > not_S;
   for(unsigned aux = 0; aux < cuts.size(); aux++) {
-    vector<int> not_S;
-    for(unsigned i = 0; i < n; i++)
+    for(unsigned i = 0; i < trips.size() + 1; i++)
       if(find(cuts[aux].begin(), cuts[aux].end(), i) == cuts[aux].end())
         not_S.push_back(i);
 
     IloExpr lhs(getEnv());
-    for(unsigned i = 0; i < not_S.size(); i++)
-      for(unsigned j = 0; j < cuts[aux].size(); j++)
-        for(unsigned k = 0; k < c; k++)
-          lhs += x[k][ not_S[i] ][ cuts[aux][j] ];
+    for(unsigned it = 0; it < edges.size(); it++) {
+      unsigned i = edges[it].v1;
+      if(find(not_S.begin(), not_S.end(), i) != not_S.end())
+        lhs += chi[it];
+    }
 
-    IloConstraint cut = (lhs >= 1.0);
-    cut = add(cut);
-    if(logs)
-      _file << cut << endl;
-    cut.end();
-    n_cuts++;
+    for(unsigned s = 0; s < cuts[aux].size(); s++) {
+      IloExpr rhs(getEnv());
+      for(unsigned k = 0; k < c; k++)
+        rhs += lambda[s][k];
+
+      IloConstraint cut = (lhs >= rhs);
+      cut = add(cut);
+      if(logs)
+        _file << cut << endl;
+      cut.end();
+      n_cuts++;
+    }
   }
 
   if(logs)
@@ -99,41 +89,24 @@ void hao_cutsetcallback::main() {
 }
 
 void hao_cutsetcallback2::main() {
-  unsigned c = cars.get_c();
-  unsigned n = cars.get_n();
-
   bool logs = true;
 	if(logs)
 		_file << "\nEntering hao_cutsetcallback. Solution value:" << getObjValue() << "\n";
 
-  // Building edges list and assigning variables LR values
-  vector<str_edge> edges;
-  vector<double> weights;
-  for(int i = 0; i < n; i++)
-    for(int j = i + 1; j < n; j++) {
-      str_edge edge;
-      edge.v1 = i;
-      edge.v2 = j;
-      edges.push_back(edge);
+  vector< double > weights;
+  for(unsigned it = 0; it < edges.size(); it++) {
+    unsigned i = edges[it].v1;
+    unsigned j = edges[it].v2;
+    weights.push_back(getValue(chi[it]));
+  }
 
-      // Getting edges weights ij and ji
-      double weight = 0.0;
-      for(int k = 0; k < c; k++)
-        weight += getValue(x[k][i][j]);
-      weights.push_back(weight);
-      weight = 0.0;
-      for(int k = 0; k < c; k++)
-        weight += getValue(x[k][j][i]);
-      weights.push_back(weight);
-    }
-
-  // if(logs)
-	// 	_file << "Neighborhood list built!...\n";
+  if(logs)
+		_file << "Neighborhood list built!...\n";
 
   // Applying minimum cut algorithm
-  vector<vector<int> > cuts;
+  vector< vector< int > > cuts;
   Gmindcut alg = Gmindcut(_file);
-  alg.start(n, edges.size(), edges);
+  alg.start(trips.size(), edges.size(), edges);
   int ncuts = alg.generate_cuts(weights, cuts, edges, false);
   _file << "Number of cuts found: " << ncuts << endl;
 
@@ -145,24 +118,31 @@ void hao_cutsetcallback2::main() {
   }
 
   // Evaluating whether there's constraint violation
+  vector< int > not_S;
   for(unsigned aux = 0; aux < cuts.size(); aux++) {
-    vector<int> not_S;
-    for(unsigned i = 0; i < n; i++)
+    for(unsigned i = 0; i < trips.size() + 1; i++)
       if(find(cuts[aux].begin(), cuts[aux].end(), i) == cuts[aux].end())
         not_S.push_back(i);
 
     IloExpr lhs(getEnv());
-    for(unsigned i = 0; i < not_S.size(); i++)
-      for(unsigned j = 0; j < cuts[aux].size(); j++)
-        for(unsigned k = 0; k < c; k++)
-          lhs += x[k][ not_S[i] ][ cuts[aux][j] ];
+    for(unsigned it = 0; it < edges.size(); it++) {
+      unsigned i = edges[it].v1;
+      if(find(not_S.begin(), not_S.end(), i) != not_S.end())
+        lhs += chi[it];
+    }
 
-    IloConstraint cut = (lhs >= 1.0);
-    cut = add(cut);
-    if(logs)
-      _file << cut << endl;
-    cut.end();
-    n_cuts++;
+    for(unsigned s = 0; s < cuts[aux].size(); s++) {
+      IloExpr rhs(getEnv());
+      for(unsigned k = 0; k < c; k++)
+        rhs += lambda[s][k];
+
+      IloConstraint cut = (lhs >= rhs);
+      cut = add(cut);
+      if(logs)
+        _file << cut << endl;
+      cut.end();
+      n_cuts++;
+    }
   }
 
   if(logs)
