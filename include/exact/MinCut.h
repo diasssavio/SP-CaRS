@@ -31,12 +31,14 @@ private:
 	Digraph::ArcMap<double> *dist;
 	Digraph::NodeMap<bool> *cut;
 	void init();
-	void build_graph(int n, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol);
+	// void build_graph(int, ArcList::iterator, ArcList::iterator, IloNumArray&);
+  void build_graph(int, ArcList*, IloNumArray&);
 	void run();
 
 public:
 	MinCut();
-	void run_maxflow(int n, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol);
+	// void run_maxflow(int, ArcList::iterator, ArcList::iterator, IloNumArray&);
+  void run_maxflow(int, ArcList*, IloNumArray&);
 	int addNode();
 	int addArc(int i, int j);
 	void addCost(int e_id, double cost);

@@ -31,30 +31,49 @@ void MinCut::init()
 	this->dist = new Digraph::ArcMap<double>(*g);
 }
 
-void MinCut::build_graph(int n, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol)
+// void MinCut::build_graph(int n, ArcList::iterator begin, ArcList::iterator end, IloNumArray& sol)
+// {
+// 	for (int i = 0; i < n; ++i)
+// 		addNode();
+//
+// 	for(ArcList::iterator it=begin; it!=end; ++it){
+// 		_Arc * aux = *it;
+// 		if(sol[aux->get_i()][aux->get_j()]>1E-6){
+// 			int id = addArc(aux->get_i(), aux->get_j());
+// 			(*dist)[g->arcFromId(id)] = sol[aux->get_i()][aux->get_j()];
+// 		}
+// 	}
+// }
+
+void MinCut::build_graph(int n, ArcList* edges, IloNumArray& sol)
 {
 	for (int i = 0; i < n; ++i)
 		addNode();
 
-	for(ArcList::iterator it=begin; it!=end; ++it){
-		_Arc * aux = *it;
-		if(sol[aux->get_i()][aux->get_j()]>1E-6){
-			int id = addArc(aux->get_i(), aux->get_j());
-			(*dist)[g->arcFromId(id)] = sol[aux->get_i()][aux->get_j()];
+	for(int it = 0; it < edges->size(); ++it)
+		if(sol[it] > 1E-6){
+			int id = addArc(edges->at(it)->get_i(), edges->at(it)->get_j());
+			(*dist)[g->arcFromId(id)] = sol[it];
 		}
-	}
 }
 
+// void MinCut::run_maxflow(int n, ArcList::iterator begin, ArcList::iterator end, IloNumArray& sol)
+// {
+// 	init();
+//
+// 	build_graph(n, begin, end, sol);
+//
+// 	run();
+// }
 
-void MinCut::run_maxflow(int n, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol)
+void MinCut::run_maxflow(int n, ArcList* edges, IloNumArray& sol)
 {
 	init();
 
-	build_graph(n, begin, end, sol);
+	build_graph(n, edges, sol);
 
 	run();
 }
-
 
 int MinCut::addNode()
 {

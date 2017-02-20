@@ -15,10 +15,12 @@
 
 #include "../instance.h"
 #include "../typedef.hpp"
+#include "../arc_list.h"
+#include "../arc.h"
 
 class model: public IloModel {
 private:
-	void init(); // Initialize all variables for problem
+	void init(ArcList*); // Initialize all variables for problem
 	void add_const(); // Add constraints to model
 	void add_obj(); // Add objective function to model
 
@@ -27,7 +29,7 @@ private:
 	IloNumArray2 f; // Cost of each trip using a different vehicle
 
 public:
-	model(IloEnv&, instance&, IloNumArray2&, IloNumArray2&, graph&);
+	model(IloEnv&, instance&, IloNumArray2&, IloNumArray2&, graph&, ArcList*);
 	virtual ~model();
 
   graph& g;
@@ -37,7 +39,7 @@ public:
 
 	// Variables
 	IloNumVarArray2 lambda; // Whether a trip is realized by a vehicle
-	IloNumVarArray2 chi; // Whether an arc is in the cycle (solution)
+	IloNumVarArray chi; // Whether an arc is in the cycle (solution)
 	IloNumVarArray mu; // Whether a trip is in the cycle (solution)
 };
 

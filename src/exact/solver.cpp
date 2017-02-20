@@ -65,6 +65,7 @@ void solver::run(vector< trip >& trips, ArcList* ar, double tl, double UB, bool 
   // use(IloCplex::Callback(new (env) hao_cutsetcallback(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
   // use(IloCplex::Callback(new (env) hao_cutsetcallback2(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
   // use(IloCplex::Callback(new (env) branch_callback(env, timer, cars, mod.x, mod.y, &linear_obj, &linear_time)));
+  // use(CtCallback(mod.chi, mod.lambda, mod.cars, trips, ar));
   use(IloCplex::Callback(new (env) mipinfo_callback(env, timer, &linear_obj, &linear_time)));
 
   solve();
