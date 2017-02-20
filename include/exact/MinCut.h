@@ -7,8 +7,8 @@
 #include <set>
 #include <map>
 #include <ilcplex/ilocplex.h>
-#include"arc_list.h"
-#include"arc.h"
+#include "arc_list.h"
+#include "arc.h"
 using namespace std;
 
 typedef IloArray<IloNumVarArray> IloNumVarMatrix;

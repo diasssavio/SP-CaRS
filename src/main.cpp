@@ -24,6 +24,7 @@
 #include "../include/heuristic/constructor.h"
 #include "../include/heuristic/ils.h"
 #include "../include/exact/model.h"
+#include "../include/exact/MinCut.h"
 #include "../include/exact/solver.h"
 
 using namespace std;

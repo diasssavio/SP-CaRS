@@ -55,7 +55,7 @@ CPLEXINCDIR   = $(CPLEXDIR)/include
 CONCERTINCDIR = $(CONCERTDIR)/include
 
 # Header's include path
-CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR)
+CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR) -lemon
 # CCFLAGS = $(CCOPT)
 
 # Executable name
@@ -124,8 +124,8 @@ $(TMP_CARS)/ils.o: $(SRC)/heuristic/ils.cpp $(INCLUDE)/heuristic/ils.h
 	$(CCC) -c $(CCFLAGS) $(SRC)/heuristic/ils.cpp -o $(TMP_CARS)/ils.o
 
 # EXACT
-# $(TMP_CARS)/exact/mincut.o: $(SRC)/exact/mincut.cpp $(INCLUDE)/exact/mincut.h
-# 	$(CCC) -c $(CCFLAGS) $(SRC)/exact/mincut.cpp -o $(TMP_CARS)/exact/mincut.o
+$(TMP_CARS)/MinCut.o: $(SRC)/exact/MinCut.cpp $(INCLUDE)/exact/MinCut.h
+	$(CCC) -c $(CCFLAGS) $(SRC)/exact/MinCut.cpp -o $(TMP_CARS)/exact/MinCut.o
 $(TMP_CARS)/gmindcut.o: $(SRC)/exact/gmindcut.cpp $(INCLUDE)/exact/gmindcut.h
 	$(CCC) -c $(CCFLAGS) $(SRC)/exact/gmindcut.cpp -o $(TMP_CARS)/gmindcut.o
 $(TMP_CARS)/node_info.o: $(SRC)/exact/node_info.cpp $(INCLUDE)/exact/node_info.h
@@ -141,33 +141,11 @@ $(TMP_CARS)/solver.o: $(SRC)/exact/solver.cpp $(INCLUDE)/exact/solver.h
 $(TMP_CARS)/main.o: $(SRC)/main.cpp
 	$(CCC) -c $(CCFLAGS) $(SRC)/main.cpp -o $(TMP_CARS)/main.o
 
-########################## OBJECT's LIBRARIES #######################################################
-# CONFIGURATION
-# $(TMP_CARS)/Configuration.o: $(TMP_CARS)/FWChrono.o $(TMP_CARS)/mt19937ar.o
-# 	$(CCC) -Wl,-r $(TMP_CARS)/FWChrono.o $(TMP_CARS)/mt19937ar.o -o $(TMP_CARS)/Configuration.o -nostdlib
-#
-# # STRUCTURE & TIMER
-# $(TMP_CARS)/Structure.o:  $(TMP_CARS)/instance.o $(TMP_CARS)/solution.o $(TMP_CARS)/logger.o
-# 	$(CCC) -Wl,-r $(TMP_CARS)/instance.o $(TMP_CARS)/solution.o $(TMP_CARS)/logger.o -o $(TMP_CARS)/Structure.o -nostdlib
-#
-# # ILS
-# $(TMP_CARS)/ILS.o: $(TMP_CARS)/constructor.o $(TMP_CARS)/neighborhoods.o $(TMP_CARS)/perturbation.o $(TMP_CARS)/ils.o
-# 	$(CCC) -Wl,-r $(TMP_CARS)/constructor.o $(TMP_CARS)/neighborhoods.o $(TMP_CARS)/perturbation.o $(TMP_CARS)/ils.o -o $(TMP_CARS)/ILS.o -nostdlib
-
-# EXACT
-# $(TMP_CARS)/Exact.o: $(TMP_CARS)/exact/mincut.o $(TMP_CARS)/exact/gmindcut.o $(TMP_CARS)/exact/node_info.o $(TMP_CARS)/exact/callbacks.o $(TMP_CARS)/exact/model.o $(TMP_CARS)/exact/solver.o
-# 	gcc -Wl,-r $(TMP_CARS)/exact/mincut.o $(TMP_CARS)/exact/gmindcut.o $(TMP_CARS)/exact/node_info.o $(TMP_CARS)/exact/callbacks.o $(TMP_CARS)/exact/model.o $(TMP_CARS)/exact/solver.o -o $(TMP_CARS)/Exact.o -nostdlib
-# $(TMP_CARS)/Exact.o: $(TMP_CARS)/gmindcut.o $(TMP_CARS)/node_info.o $(TMP_CARS)/callbacks.o $(TMP_CARS)/model.o $(TMP_CARS)/solver.o
-# 	$(CCC) -Wl,-r $(TMP_CARS)/gmindcut.o $(TMP_CARS)/node_info.o $(TMP_CARS)/callbacks.o $(TMP_CARS)/model.o $(TMP_CARS)/solver.o -o $(TMP_CARS)/Exact.o -nostdlib
-
 
 ########################## LINKANDO TUDO ########################################################
 
-# $(CPP_EX): $(TMP_CARS)/Configuration.o $(TMP_CARS)/Structure.o $(TMP_CARS)/ILS.o $(TMP_CARS)/Exact.o $(TMP_CARS)/main.o
-# 	$(CCC) $(CCFLAGS) $(TMP_CARS)/Configuration.o $(TMP_CARS)/Structure.o $(TMP_CARS)/ILS.o $(TMP_CARS)/Exact.o $(TMP_CARS)/main.o -L$(TMP_STATIC) -o $(CPP_EX)
-
-$(CPP_EX): $(TMP_CARS)/FWChrono.o $(TMP_CARS)/mt19937ar.o $(TMP_CARS)/instance.o $(TMP_CARS)/solution.o $(TMP_CARS)/logger.o $(TMP_CARS)/bit_array.o $(TMP_CARS)/constructor.o $(TMP_CARS)/neighborhoods.o $(TMP_CARS)/perturbation.o $(TMP_CARS)/ils.o $(TMP_CARS)/gmindcut.o $(TMP_CARS)/node_info.o $(TMP_CARS)/callbacks.o $(TMP_CARS)/model.o $(TMP_CARS)/solver.o $(TMP_CARS)/main.o
-	$(CCC) $(CCFLAGS) $(TMP_CARS)/FWChrono.o $(TMP_CARS)/mt19937ar.o $(TMP_CARS)/instance.o $(TMP_CARS)/solution.o $(TMP_CARS)/logger.o $(TMP_CARS)/bit_array.o $(TMP_CARS)/constructor.o $(TMP_CARS)/neighborhoods.o $(TMP_CARS)/perturbation.o $(TMP_CARS)/ils.o $(TMP_CARS)/gmindcut.o $(TMP_CARS)/node_info.o $(TMP_CARS)/callbacks.o $(TMP_CARS)/model.o $(TMP_CARS)/solver.o $(TMP_CARS)/main.o -L$(TMP_STATIC) -o $(CPP_EX) $(CCLNFLAGS)
+$(CPP_EX): $(TMP_CARS)/FWChrono.o $(TMP_CARS)/mt19937ar.o $(TMP_CARS)/instance.o $(TMP_CARS)/solution.o $(TMP_CARS)/logger.o $(TMP_CARS)/bit_array.o $(TMP_CARS)/constructor.o $(TMP_CARS)/neighborhoods.o $(TMP_CARS)/perturbation.o $(TMP_CARS)/ils.o $(TMP_CARS)/MinCut.o $(TMP_CARS)/gmindcut.o $(TMP_CARS)/node_info.o $(TMP_CARS)/callbacks.o $(TMP_CARS)/model.o $(TMP_CARS)/solver.o $(TMP_CARS)/main.o
+	$(CCC) $(CCFLAGS) $(TMP_CARS)/FWChrono.o $(TMP_CARS)/mt19937ar.o $(TMP_CARS)/instance.o $(TMP_CARS)/solution.o $(TMP_CARS)/logger.o $(TMP_CARS)/bit_array.o $(TMP_CARS)/constructor.o $(TMP_CARS)/neighborhoods.o $(TMP_CARS)/perturbation.o $(TMP_CARS)/ils.o $(TMP_CARS)/MinCut.o $(TMP_CARS)/gmindcut.o $(TMP_CARS)/node_info.o $(TMP_CARS)/callbacks.o $(TMP_CARS)/model.o $(TMP_CARS)/solver.o $(TMP_CARS)/main.o -L$(TMP_STATIC) -o $(CPP_EX) $(CCLNFLAGS)
 
 
 #endif

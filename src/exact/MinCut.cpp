@@ -1,4 +1,4 @@
-#include "MinCut.h"
+#include "../../include/exact/MinCut.h"
 using namespace std;
 using namespace lemon;
 
@@ -33,7 +33,7 @@ void MinCut::init()
 
 void MinCut::build_graph(int N, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol)
 {
-	
+
 	for (int i = 0; i < N; ++i)
 	{
 		addNode();
@@ -46,7 +46,7 @@ void MinCut::build_graph(int N, ArcList::iterator begin, ArcList::iterator end, 
 			(*dist)[g->arcFromId(id)] = sol[arc->get_i()][arc->get_j()];
 		}
 	}
-	
+
 }
 
 
