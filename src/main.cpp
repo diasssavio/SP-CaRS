@@ -37,75 +37,75 @@ T string_to(const string& s){
 	return x;
 }
 
-vector< str_edge > build_graph(vector< trip >&);
+// vector< str_edge > build_graph(vector< trip >&);
+ArcList build_graph(vector< trip >&);
 
 ILOSTLBEGIN
 
-ILOLAZYCONSTRAINTCALLBACK3(CtCallback, IloNumVarMatrix, x, IloNumVarMatrix, y, Instance*, problem)
+ILOLAZYCONSTRAINTCALLBACK5(CtCallback, IloNumVarMatrix, chi, IloNumVarMatrix, lambda, instance&, cars, vector< trip >&, trips, ArcList*, edges)
 {
 	//cout << "Separacao Lazy"<<endl;
 	IloEnv env = getEnv();
 
-	IloInt numVertices = problem->get_nvertices()+1;
+	IloInt numVertices = trips.size() + 1;
 
-	IloNumMatrix sol(env, numVertices);
-	IloNumArray solY(env, numVertices);
+	IloNumMatrix sol_chi(env, numVertices);
+	IloNumArray sol_lambda(env, numVertices);
 
-	for (int i = 0; i < numVertices; i++)
+	for (int i = 0; i < numVertices; i++) {
+    sol_chi[i] = IloNumArray(env, numVertices);
+    IloNum aux;
+    for(int k = 0; k < cars.get_c(); k++)
+      aux += getValue(lambda[i][k]);
+  	sol_lambda[i] = aux;
+  }
+
+	for (ArcList::iterator it = edges->begin(); it != edges->end(); ++it)
 	{
-		sol[i] = IloNumArray(env, numVertices);
-		solY[i] = getValue(y[i][i]);
-	}
-
-	for (ArcList::iterator it = problem->begin_arcs(); it!=problem->end_arcs(); ++it)
-	{
-			Arc * arc = *it;
-			sol[arc->get_i()][arc->get_j()] = getValue(x[arc->get_i()][arc->get_j()]);
+			_Arc * aux = *it;
+			sol_chi[aux->get_i()][aux->get_j()] = getValue(chi[aux->get_i()][aux->get_j()]);
 	}
 
 
 	MinCut algo;
-	algo.run_maxflow(numVertices, problem->begin_arcs(), problem->end_arcs(), sol);
+	algo.run_maxflow(numVertices, edges->begin(), edges->end(), sol_chi);
 	int *S = new int[numVertices];
 
-	for (int id = 0; id < problem->get_nvertices(); ++id)
+	for (int id = 1; id <= trips.size(); ++id)
 	{
-		if (solY[id] > 1E-6) // o nó y está na solução
+		if (sol_lambda[id] > 1E-6) // o nó y está na solução
 		{
 			//cout<<"Encontrou y["<<id<<"]: "<<getValue(y[id])<<endl;
 			//calculando o valor do corte
-			double val = algo.generate_min_cut(problem->get_warehouse(),id);
+			double val = algo.generate_min_cut(0, id);
 			//cout<<"CorteMin entre ("<<id<<","<<warehouse<<"): "<< val<<endl;
 
-			bool rInSbar = algo.is_node_in_cut(problem->get_warehouse());
+			bool rInSbar = algo.is_node_in_cut(0);
 
-			if (val - solY[id] < -1E-6) // se existem componentes conexas separadas
+			if (val - sol_lambda[id] < -1E-6) // se existem componentes conexas separadas
 			{
-				for (int i = 0; i < problem->get_nvertices()+1; i++)
-				{
-					if (algo.is_node_in_cut(i)==rInSbar)
-					{
-						S[i]=0;
-					}
+				for (int i = 0; i <= trips.size(); i++)
+					if (algo.is_node_in_cut(i) == rInSbar)
+						S[i] = 0;
 					else
-					{
-						S[i]=1;
-					}
-				}
+						S[i] = 1;
 
-				IloExpr sum(env);
+				IloExpr lhs(env);
 				//stringstream restr;
-				for(ArcList::iterator it=problem->begin_arcs(); it!=problem->end_arcs();++it){
-					Arc *arc = *it;
-					if(S[arc->get_j()] and !S[arc->get_i()]){
-						sum += x[arc->get_i()][arc->get_j()];
-					}
+				for(ArcList::iterator it = edges->begin(); it != edges->end(); ++it){
+					_Arc * aux = *it;
+					if(S[aux->get_j()] and !S[aux->get_i()])
+						lhs += chi[aux->get_i()][aux->get_j()];
 				}
 
-				IloExpr aux(env);
-				aux = sum - y[id][id];
-				IloRange constr_cut(env, 0.0, aux, IloInfinity);
-				add(constr_cut);
+				IloExpr rhs(env);
+        for(int k = 0; k < cars.get_c(); k++)
+          rhs += lambda[id][k];
+        IloConstraint cut = (lhs >= rhs);
+        cut = add(cut);
+        // if(logs)
+          // _file << cut << endl;
+        cut.end();
 			}
 		}
 	}
@@ -169,7 +169,8 @@ int main(int argc, char* args[]) {
   // for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++)
   //   i->show_data();
 
-  vector< str_edge > ar = build_graph(trips);
+  // vector< str_edge > ar = build_graph(trips);
+  ArcList ar = build_graph(trips);
   graph g;
   g.n_nodes = trips.size() + 1;
   g.n_arcs = ar.size();
@@ -180,7 +181,8 @@ int main(int argc, char* args[]) {
   try {
     model mod(env, cars, B, f, g);
     solver cplex(env, mod, timer);
-    cplex.run(trips, ar);
+    // cplex.run(trips, ar);
+    cplex.run(trips, &ar);
 
     printf("OBJ VALUE: %.2lf\n", cplex.get_obj_value());
     IloNumArray2 lambda = cplex.get_lambda();
@@ -196,18 +198,18 @@ int main(int argc, char* args[]) {
 	return 0;
 }
 
-vector< str_edge > build_graph(vector< trip >& trips) {
-  vector< str_edge > edges;
+ArcList build_graph(vector< trip >& trips) {
+  ArcList edges;
   for(unsigned i = 0; i < trips.size(); i++) {
     // Adding edges starting from v0
     if(trips[i].get_renting() == 0) {
-      str_edge aux = {0, i + 1};
+      _Arc * aux = new _Arc(0, i + 1);
       edges.push_back(aux);
     }
 
     // Adding edges finishing in v0
     if(trips[i].get_returning() == 0) {
-      str_edge aux = {i + 1, 0};
+      _Arc * aux = new _Arc(i + 1, 0);
       edges.push_back(aux);
     }
 
@@ -217,7 +219,7 @@ vector< str_edge > build_graph(vector< trip >& trips) {
       if(i == j) continue;
       if(trips[i].get_returning() == trips[j].get_renting() && trips[i].get_returning() != 0)
         if(!trip_vertices->has_commom_element(trips[j].get_bit_vertices())) {
-          str_edge aux = {i + 1, j + 1};
+          _Arc * aux = new _Arc(i + 1, j + 1);
           edges.push_back(aux);
         }
     }
@@ -225,3 +227,33 @@ vector< str_edge > build_graph(vector< trip >& trips) {
 
   return edges;
 }
+
+// vector< str_edge > build_graph(vector< trip >& trips) {
+//   vector< str_edge > edges;
+//   for(unsigned i = 0; i < trips.size(); i++) {
+//     // Adding edges starting from v0
+//     if(trips[i].get_renting() == 0) {
+//       str_edge aux = {0, i + 1};
+//       edges.push_back(aux);
+//     }
+//
+//     // Adding edges finishing in v0
+//     if(trips[i].get_returning() == 0) {
+//       str_edge aux = {i + 1, 0};
+//       edges.push_back(aux);
+//     }
+//
+//     // Adding edges between trips
+//     BitArray* trip_vertices = trips[i].get_bit_vertices();
+//     for(unsigned j = 0; j < trips.size(); j++) {
+//       if(i == j) continue;
+//       if(trips[i].get_returning() == trips[j].get_renting() && trips[i].get_returning() != 0)
+//         if(!trip_vertices->has_commom_element(trips[j].get_bit_vertices())) {
+//           str_edge aux = {i + 1, j + 1};
+//           edges.push_back(aux);
+//         }
+//     }
+//   }
+//
+//   return edges;
+// }

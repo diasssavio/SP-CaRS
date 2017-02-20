@@ -21,8 +21,10 @@ void model::init(){
 	int c = cars.get_c();
 
 	lambda = IloNumVarArray2(getEnv(), g.n_nodes);
+  chi = IloNumVarArray2(getEnv(), g.n_nodes);
 	for(int i = 0; i < g.n_nodes; i++) {
 		lambda[i] = IloNumVarArray(getEnv(), c);
+    chi[i] = IloNumVarArray(getEnv(), g.n_nodes);
 		for(int k = 0; k < c; k++) {
       if(i == 0) lambda[i][k] = IloNumVar(getEnv(), 0, 0, ILOINT);
       else lambda[i][k] = IloNumVar(getEnv(), 0, 1, ILOINT);
@@ -33,15 +35,23 @@ void model::init(){
 			lambda[i][k].setName(lambda_name.str().c_str());
 			add(lambda[i][k]);
 		}
+
+    for(int j = 0; j < g.n_nodes; j++) {
+  		chi[i][j] = IloNumVar(getEnv(), 0, 1, ILOINT);
+  		stringstream chi_name;
+  		chi_name << "chi(" << i << ")(" << j << ")";
+  		chi[i][j].setName(chi_name.str().c_str());
+  		add(chi[i][j]);
+  	}
 	}
-	chi = IloNumVarArray(getEnv(), g.n_arcs);
-	for(int i = 0; i < g.n_arcs; i++) {
-		chi[i] = IloNumVar(getEnv(), 0, 1, ILOINT);
-		stringstream chi_name;
-		chi_name << "chi(" << i << ")";
-		chi[i].setName(chi_name.str().c_str());
-		add(chi[i]);
-	}
+	// chi = IloNumVarArray(getEnv(), g.n_arcs);
+	// for(int i = 0; i < g.n_arcs; i++) {
+	// 	chi[i] = IloNumVar(getEnv(), 0, 1, ILOINT);
+	// 	stringstream chi_name;
+	// 	chi_name << "chi(" << i << ")";
+	// 	chi[i].setName(chi_name.str().c_str());
+	// 	add(chi[i]);
+	// }
 }
 
 void model::add_const(){

@@ -26,35 +26,31 @@ void MinCut::init()
 		delete alg;
 	if (dist != NULL)
 		delete dist;
-	this->N = 0;
+	this->n = 0;
 	this->g = new Digraph();
 	this->dist = new Digraph::ArcMap<double>(*g);
 }
 
-void MinCut::build_graph(int N, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol)
+void MinCut::build_graph(int n, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol)
 {
-
-	for (int i = 0; i < N; ++i)
-	{
+	for (int i = 0; i < n; ++i)
 		addNode();
-	}
 
 	for(ArcList::iterator it=begin; it!=end; ++it){
-		Arc * arc = *it;
-		if(sol[arc->get_i()][arc->get_j()]>1E-6){
-			int id = addArc(arc->get_i(), arc->get_j());
-			(*dist)[g->arcFromId(id)] = sol[arc->get_i()][arc->get_j()];
+		_Arc * aux = *it;
+		if(sol[aux->get_i()][aux->get_j()]>1E-6){
+			int id = addArc(aux->get_i(), aux->get_j());
+			(*dist)[g->arcFromId(id)] = sol[aux->get_i()][aux->get_j()];
 		}
 	}
-
 }
 
 
-void MinCut::run_maxflow(int N, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol)
+void MinCut::run_maxflow(int n, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol)
 {
 	init();
 
-	build_graph(N, begin, end, sol);
+	build_graph(n, begin, end, sol);
 
 	run();
 }
@@ -63,7 +59,7 @@ void MinCut::run_maxflow(int N, ArcList::iterator begin, ArcList::iterator end, 
 int MinCut::addNode()
 {
 	Digraph::Node node = g->addNode();
-	++N;
+	++n;
 	return g->id(node);
 }
 
@@ -94,7 +90,8 @@ double MinCut::generate_min_cut(int source, int target)
 	cut = new Digraph::NodeMap<bool>(*g);
 	if (alg != NULL)
 		delete alg;
-	this->alg = new EdmondsKarp<Digraph,Digraph::ArcMap<double> >(*g,*dist,g->nodeFromId(source),g->nodeFromId(target));
+	// this->alg = new EdmondsKarp< Digraph, Digraph::ArcMap<double>, Tolerance< double > >(*g,*dist,g->nodeFromId(source),g->nodeFromId(target), Tolerance< double >(EPSILON));
+  this->alg = new EdmondsKarp< Digraph, Digraph::ArcMap<double> >(*g,*dist,g->nodeFromId(source),g->nodeFromId(target));
 	this->alg->run();
 	double val = this->alg->flowValue();
 	this->alg->minCutMap(*cut);

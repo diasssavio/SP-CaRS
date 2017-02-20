@@ -36,8 +36,34 @@ void solver::run(vector< trip >& trips, vector< str_edge >& ar, double tl, doubl
 
   exportModel("test.lp");
 
-  use(IloCplex::Callback(new (env) hao_cutsetcallback(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
-  use(IloCplex::Callback(new (env) hao_cutsetcallback2(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
+  // use(IloCplex::Callback(new (env) hao_cutsetcallback(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
+  // use(IloCplex::Callback(new (env) hao_cutsetcallback2(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
+  // use(IloCplex::Callback(new (env) branch_callback(env, timer, cars, mod.x, mod.y, &linear_obj, &linear_time)));
+  use(IloCplex::Callback(new (env) mipinfo_callback(env, timer, &linear_obj, &linear_time)));
+
+  solve();
+  timer.stop();
+  _file.close();
+
+  obj_value = getObjValue();
+  for(unsigned i = 0; i < mod.g.n_nodes; i++) {
+    IloNumArray aux(env);
+    for(unsigned k = 0; k < mod.cars.get_c(); k++)
+      aux.add(getValue(mod.lambda[i][k]));
+    lambda.add(aux);
+  }
+}
+
+void solver::run(vector< trip >& trips, ArcList* ar, double tl, double UB, bool first) {
+  set_params(tl);
+
+  ofstream _file;
+  _file.open("cutset.txt", ios::trunc);
+
+  exportModel("test.lp");
+
+  // use(IloCplex::Callback(new (env) hao_cutsetcallback(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
+  // use(IloCplex::Callback(new (env) hao_cutsetcallback2(env, mod.lambda, mod.chi, trips, ar, _file, mod.cars.get_c())));
   // use(IloCplex::Callback(new (env) branch_callback(env, timer, cars, mod.x, mod.y, &linear_obj, &linear_time)));
   use(IloCplex::Callback(new (env) mipinfo_callback(env, timer, &linear_obj, &linear_time)));
 

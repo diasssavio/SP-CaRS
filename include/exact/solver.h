@@ -14,6 +14,8 @@
 #include "model.h"
 #include "callbacks.h"
 #include "../typedef.hpp"
+#include "../arc_list.h"
+#include "../arc.h"
 #include "../instance.h"
 #include "../FWChrono.h"
 
@@ -40,6 +42,8 @@ public:
 	virtual ~solver();
 
 	void run(vector< trip >&, vector< str_edge >&, double = MAX_DOUBLE, double = MAX_DOUBLE, bool = false);
+
+  void run(vector< trip >&, ArcList*, double = MAX_DOUBLE, double = MAX_DOUBLE, bool = false);
 
 	IloNumArray2& get_lambda() { return lambda; }
 	IloNumArray& get_chi() { return chi; }

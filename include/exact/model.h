@@ -31,13 +31,13 @@ public:
 	virtual ~model();
 
   graph& g;
-  
+
 	// Instance
 	instance& cars;
 
 	// Variables
 	IloNumVarArray2 lambda; // Whether a trip is realized by a vehicle
-	IloNumVarArray chi; // Whether an arc is in the cycle (solution)
+	IloNumVarArray2 chi; // Whether an arc is in the cycle (solution)
 	IloNumVarArray mu; // Whether a trip is in the cycle (solution)
 };
 

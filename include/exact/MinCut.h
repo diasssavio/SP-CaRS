@@ -7,9 +7,12 @@
 #include <set>
 #include <map>
 #include <ilcplex/ilocplex.h>
-#include "arc_list.h"
-#include "arc.h"
+#include "../arc_list.h"
+#include "../arc.h"
+#include "../typedef.hpp"
+
 using namespace std;
+// using namespace lemon;
 
 typedef IloArray<IloNumVarArray> IloNumVarMatrix;
 typedef IloArray<IloNumVarMatrix> IloNumVar3Matrix;
@@ -20,19 +23,20 @@ typedef IloArray<IloNumMatrix> IloNum3Matrix;
 
 class MinCut {
 private:
-	typedef lemon::SmartDigraph Digraph;
-	int N;
+	typedef typename lemon::SmartDigraph Digraph;
+	int n;
 	Digraph *g;
-	lemon::EdmondsKarp<Digraph ,Digraph::ArcMap<double> > *alg;
+	// lemon::EdmondsKarp< Digraph, Digraph::ArcMap<double>, Tolerance< double > > *alg;
+  lemon::EdmondsKarp< Digraph, Digraph::ArcMap<double> > *alg;
 	Digraph::ArcMap<double> *dist;
 	Digraph::NodeMap<bool> *cut;
 	void init();
-	void build_graph(int N, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol);
+	void build_graph(int n, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol);
 	void run();
 
 public:
 	MinCut();
-	void run_maxflow(int N, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol);
+	void run_maxflow(int n, ArcList::iterator begin, ArcList::iterator end, IloNumMatrix& sol);
 	int addNode();
 	int addArc(int i, int j);
 	void addCost(int e_id, double cost);
