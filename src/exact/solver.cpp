@@ -79,4 +79,7 @@ void solver::run(vector< trip >& trips, ArcList* ar, double tl, double UB, bool 
       aux.add(getValue(mod.lambda[i][k]));
     lambda.add(aux);
   }
+
+  for(unsigned i = 0; i < mod.g.n_arcs; i++)
+    chi.add(getValue(mod.chi[i]));
 }

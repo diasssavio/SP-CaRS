@@ -110,7 +110,7 @@ double MinCut::generate_min_cut(int source, int target)
 	if (alg != NULL)
 		delete alg;
 	// this->alg = new EdmondsKarp< Digraph, Digraph::ArcMap<double>, Tolerance< double > >(*g,*dist,g->nodeFromId(source),g->nodeFromId(target), Tolerance< double >(EPSILON));
-  this->alg = new EdmondsKarp< Digraph, Digraph::ArcMap<double> >(*g,*dist,g->nodeFromId(source),g->nodeFromId(target));
+  this->alg = new EdmondsKarp< Digraph, Digraph::ArcMap<double> >(*g, *dist, g->nodeFromId(source), g->nodeFromId(target));
 	this->alg->run();
 	double val = this->alg->flowValue();
 	this->alg->minCutMap(*cut);

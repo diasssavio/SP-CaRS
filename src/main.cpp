@@ -102,6 +102,15 @@ ILOLAZYCONSTRAINTCALLBACK6(CtCallback, IloNumVarArray, chi, IloNumVarMatrix, lam
 					else
 						S[i] = 1;
 
+        _file << "S: ";
+        for(int i = 0; i <= trips.size(); i++)
+          if(S[i]) _file << i << " ";
+
+        _file << "\nS_bar: ";
+        for(int i = 0; i <= trips.size(); i++)
+          if(!S[i]) _file << i << " ";
+        _file << endl;
+
 				IloExpr lhs(env);
 				// for(ArcList::iterator it = edges->begin(); it != edges->end(); ++it){
 				// 	_Arc * aux = *it;
@@ -184,8 +193,8 @@ int main(int argc, char* args[]) {
   }
 
   printf("TRIPS ADDED (%d):\n", trips.size());
-  // for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++)
-  //   i->show_data();
+  for(vector< trip >::iterator i = trips.begin(); i < trips.end(); i++)
+    i->show_data();
 
   // vector< str_edge > ar = build_graph(trips);
   ArcList ar = build_graph(trips);
@@ -193,14 +202,14 @@ int main(int argc, char* args[]) {
   g.n_nodes = trips.size() + 1;
   g.n_arcs = ar.size();
   printf("EDGES ASSIGNED (%d):\n", ar.size());
+  int count = 0;
   for(ArcList::iterator it = ar.begin(); it < ar.end(); it++) {
     _Arc * aux = *it;
-    printf("%d->%d\n", aux->get_i(), aux->get_j());
+    printf("%d: %d->%d\n", count++, aux->get_i(), aux->get_j());
   }
 
   try {
-    // model mod(env, cars, B, f, g);
-    model mod(env, cars, B, f, g, &ar);
+    model mod(env, cars, B, f, g);
     solver cplex(env, mod, timer);
     ofstream _file;
     _file.open("cutset.txt", ios::trunc);
@@ -216,6 +225,13 @@ int main(int argc, char* args[]) {
         printf("%4.0lf", lambda[i][k]);
       printf("\n");
     }
+
+    IloNumArray chi = cplex.get_chi();
+    printf("CHI:\n");
+    for(unsigned i = 0; i < g.n_arcs; i++)
+      if(chi[i] > EPSILON)
+        printf("%4d", i);
+    printf("\n");
   } catch (IloException& e) {
     cerr << "CONCERT EXCEPTION -- " << e << endl;
   }

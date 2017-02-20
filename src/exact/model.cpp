@@ -8,16 +8,16 @@
 
 #include "../../include/exact/model.h"
 
-model::model(IloEnv& _env, instance& _cars, IloNumArray2& _B, IloNumArray2& _f, graph& _g, ArcList* _arcs) : IloModel(_env), cars(_cars), B(_B), f(_f), g(_g) {
+model::model(IloEnv& _env, instance& _cars, IloNumArray2& _B, IloNumArray2& _f, graph& _g) : IloModel(_env), cars(_cars), B(_B), f(_f), g(_g) {
 	// g = _g;
-	init(_arcs);
+	init();
 	add_obj();
 	add_const();
 }
 
 model::~model() { }
 
-void model::init(ArcList* _arcs){
+void model::init(){
 	int c = cars.get_c();
 
 	lambda = IloNumVarArray2(getEnv(), g.n_nodes);

@@ -20,7 +20,7 @@
 
 class model: public IloModel {
 private:
-	void init(ArcList*); // Initialize all variables for problem
+	void init(); // Initialize all variables for problem
 	void add_const(); // Add constraints to model
 	void add_obj(); // Add objective function to model
 
@@ -29,7 +29,7 @@ private:
 	IloNumArray2 f; // Cost of each trip using a different vehicle
 
 public:
-	model(IloEnv&, instance&, IloNumArray2&, IloNumArray2&, graph&, ArcList*);
+	model(IloEnv&, instance&, IloNumArray2&, IloNumArray2&, graph&);
 	virtual ~model();
 
   graph& g;
