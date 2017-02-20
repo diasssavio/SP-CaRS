@@ -31,6 +31,10 @@ CPLEXDIR	  = /opt/ibm/ILOG/CPLEX_Studio1261/cplex
 # Concert directory
 CONCERTDIR	  = /opt/ibm/ILOG/CPLEX_Studio1261/concert
 
+LEMONINCDIR = /usr/local/include/lemon
+
+LEMONLIBDIR = /usr/local/lib/libemon.a
+
 # Compiler
 # CCC = g++-4.8
 CCC = g++
@@ -46,7 +50,7 @@ CPLEXLIBDIR   = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
 CONCERTLIBDIR = $(CONCERTDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
 
 # Include libraries identifiers
-CCLNFLAGS = -L$(CPLEXLIBDIR) -lilocplex -lcplex -L$(CONCERTLIBDIR) -lconcert -lm -pthread
+CCLNFLAGS = -L$(CPLEXLIBDIR) -lilocplex -lcplex -L$(CONCERTLIBDIR) -L$(LEMONLIBDIR) -lconcert -lm -pthread -lemon
 
 # Cplex header's directory
 CPLEXINCDIR   = $(CPLEXDIR)/include
@@ -55,7 +59,7 @@ CPLEXINCDIR   = $(CPLEXDIR)/include
 CONCERTINCDIR = $(CONCERTDIR)/include
 
 # Header's include path
-CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR) -lemon
+CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR) #-I$(LEMONINCDIR)
 # CCFLAGS = $(CCOPT)
 
 # Executable name
