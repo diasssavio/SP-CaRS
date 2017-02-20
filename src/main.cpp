@@ -40,6 +40,80 @@ vector< str_edge > build_graph(vector< trip >&);
 
 ILOSTLBEGIN
 
+ILOLAZYCONSTRAINTCALLBACK3(CtCallback, IloNumVarMatrix, x, IloNumVarMatrix, y, Instance*, problem)
+{
+	//cout << "Separacao Lazy"<<endl;
+	IloEnv env = getEnv();
+
+	IloInt numVertices = problem->get_nvertices()+1;
+
+	IloNumMatrix sol(env, numVertices);
+	IloNumArray solY(env, numVertices);
+
+	for (int i = 0; i < numVertices; i++)
+	{
+		sol[i] = IloNumArray(env, numVertices);
+		solY[i] = getValue(y[i][i]);
+	}
+
+	for (ArcList::iterator it = problem->begin_arcs(); it!=problem->end_arcs(); ++it)
+	{
+			Arc * arc = *it;
+			sol[arc->get_i()][arc->get_j()] = getValue(x[arc->get_i()][arc->get_j()]);
+	}
+
+
+	MinCut algo;
+	algo.run_maxflow(numVertices, problem->begin_arcs(), problem->end_arcs(), sol);
+	int *S = new int[numVertices];
+
+	for (int id = 0; id < problem->get_nvertices(); ++id)
+	{
+		if (solY[id] > 1E-6) // o nó y está na solução
+		{
+			//cout<<"Encontrou y["<<id<<"]: "<<getValue(y[id])<<endl;
+			//calculando o valor do corte
+			double val = algo.generate_min_cut(problem->get_warehouse(),id);
+			//cout<<"CorteMin entre ("<<id<<","<<warehouse<<"): "<< val<<endl;
+
+			bool rInSbar = algo.is_node_in_cut(problem->get_warehouse());
+
+			if (val - solY[id] < -1E-6) // se existem componentes conexas separadas
+			{
+				for (int i = 0; i < problem->get_nvertices()+1; i++)
+				{
+					if (algo.is_node_in_cut(i)==rInSbar)
+					{
+						S[i]=0;
+					}
+					else
+					{
+						S[i]=1;
+					}
+				}
+
+				IloExpr sum(env);
+				//stringstream restr;
+				for(ArcList::iterator it=problem->begin_arcs(); it!=problem->end_arcs();++it){
+					Arc *arc = *it;
+					if(S[arc->get_j()] and !S[arc->get_i()]){
+						sum += x[arc->get_i()][arc->get_j()];
+					}
+				}
+
+				IloExpr aux(env);
+				aux = sum - y[id][id];
+				IloRange constr_cut(env, 0.0, aux, IloInfinity);
+				add(constr_cut);
+			}
+		}
+	}
+
+	delete[] S;
+
+	//cout << "Separacao Lazy fim"<<endl;
+}
+
 int main(int argc, char* args[]) {
 	FWChrono timer;
 	timer.start();
